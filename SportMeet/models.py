@@ -1,10 +1,6 @@
 from django.db import models
 from datetime import datetime
 
-from django.db.models.deletion import SET_NULL
-
-# Create your models here.
-
 
 class Profile(models.Model):
     email = models.CharField(max_length=100, null=True,
@@ -17,7 +13,7 @@ class Profile(models.Model):
 
 class Team(models.Model):
     admin = models.ForeignKey(
-        Profile, null=True, on_delete=SET_NULL, related_name='adminteam')
+        Profile, null=True, on_delete=models.SET_NULL, related_name='adminteam')
     members = models.ManyToManyField(Profile, blank=True)
     name = models.CharField(max_length=50, null=True, blank=True)
     sport = models.CharField(max_length=50, choices=[(
