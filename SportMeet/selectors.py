@@ -1,4 +1,4 @@
-from SportMeet.models import Profile, Team, TeamPrivileges
+from SportMeet.models import Profile, Team
 
 
 class ProfileSelector:
