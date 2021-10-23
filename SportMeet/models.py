@@ -2,10 +2,9 @@ from django.db import models
 
 # Create your models here.
 class Profile(models.Model):
-    SEX = (('male', 'male'), ('female', 'female'))
     email = models.CharField(max_length=100, null=True, blank=True, unique=True)
     address = models.CharField(max_length=100, default='')
-    sex = models.CharField(max_length=10, choices=SEX)
+    sex = models.CharField(max_length=10, choices=[('male', 'male'), ('female', 'female')])
     age = models.IntegerField(default=0)
 
 
