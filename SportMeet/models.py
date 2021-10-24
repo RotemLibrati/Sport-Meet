@@ -5,9 +5,8 @@ from datetime import datetime
 class Profile(models.Model):
     email = models.CharField(max_length=100, null=True,
                              blank=True, unique=True)
-    address = models.CharField(max_length=100, default='')
-    sex = models.CharField(max_length=10, choices=[
-                           ('male', 'male'), ('female', 'female')])
+    city = models.CharField(max_length=100, default='')
+    sex = models.CharField(max_length=10)
     age = models.IntegerField(default=0)
 
 
