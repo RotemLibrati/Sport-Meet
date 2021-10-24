@@ -1,4 +1,6 @@
 from SportMeet.models import Profile, Team
+from django.contrib.auth.models import User
+
 
 
 class ProfileSelector:
@@ -14,3 +16,8 @@ class ProfileSelector:
         except Profile.DoesNotExist as e:
             raise e
         return profile
+
+class UserSelector:
+    @staticmethod
+    def all_users():
+        return User.objects.all()

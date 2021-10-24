@@ -2,7 +2,7 @@ from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from SportMeet.serializers import ProfileSerializer
+from SportMeet.serializers import ProfileSerializer, UserSerializer
 from SportMeet import selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login, logout
@@ -11,13 +11,21 @@ from django.contrib.auth import authenticate, login, logout
 
 
 class ListProfilesView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
         profiles = selectors.ProfileSelector.all_objects()
         serializer = ProfileSerializer(profiles, many=True)
         profiles_data = serializer.data
         return Response(data=profiles_data, status=status.HTTP_200_OK)
+
+class ListUsersView(APIView):
+    permission_classes= [AllowAny]
+    def get(self, request, *args, **kwargs):
+        users = selectors.UserSelector.all_users()
+        serializer = UserSerializer(users, many=True)
+        users_data = serializer.data
+        return Response(data=users_data, status=status.HTTP_200_OK)
 
 
 class LoginView(APIView):
