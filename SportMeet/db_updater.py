@@ -1,5 +1,6 @@
 from SportMeet.models import Profile
 from SportMeet import selectors
+from django.contrib.auth.models import User
 
 
 class ProfileUpdater:
@@ -12,3 +13,17 @@ class ProfileUpdater:
         for key, val in kwargs.items():
             setattr(profile, key, val)
         profile.save()
+
+    @staticmethod
+    def create_new_profile_for_user(user: User, data: dict):
+        profile: Profile = Profile(user=user, **data)
+        profile.save()
+        return profile
+
+
+class UserUpdater:
+    @staticmethod
+    def create_new_user(data: dict):
+        user = User(**data)
+        user.save()
+        return user
