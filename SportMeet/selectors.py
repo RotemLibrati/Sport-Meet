@@ -34,6 +34,20 @@ class GameSelector:
         games = Game.objects.filter(
             team__in=teams, event_time__gte=_now).order_by('event_time')[0:4]
         return games
+    
+    @staticmethod
+    def many_obj_in_the_future_by_username(username: str):
+        user = User.objects.get(username=username)
+        teams = user.profile.team.all()
+        _now = datetime.now()
+        games = Game.objects.filter(
+            team__in=teams, event_time__gte=_now).order_by('event_time')
+        return games
+
+    @staticmethod
+    def one_obj_by_id(id: str):
+        return Game.objects.get(id=id)
+
 
 
 class TeamSelector:

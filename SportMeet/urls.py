@@ -8,6 +8,8 @@ urlpatterns = [
     path('logout', views.LogoutView.as_view()),
     path('users', views.ListUsersView.as_view()),
     path('register', views.RegisterView.as_view()),
-    re_path('^games/(?P<username>.+)/$', views.GamesView.as_view()),
+    re_path('^recent-games/(?P<username>.+)/$', views.RecentGamesView.as_view()),
+    re_path('^games/(?P<username>.+)/$', views.ListGamesView.as_view()),
+    re_path('^game/(?P<id>.+)/$', views.DetailGameView.as_view()),
     re_path('^teams/(?P<username>.+)/$', views.TeamsView.as_view()),
 ]

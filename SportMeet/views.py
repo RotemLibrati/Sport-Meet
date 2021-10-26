@@ -1,7 +1,9 @@
+from copy import error
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from SportMeet.models import Game
 from SportMeet.serializers import GameSerializer, ProfileSerializer, TeamSerializer, UserSerializer
 from SportMeet import db_updater, selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -76,7 +78,7 @@ class RegisterView(APIView):
             return Response(data={'errors': f'{user_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GamesView(APIView):
+class RecentGamesView(APIView):
 
     def get(self, request, username, *args, **kwargs):
         games = selectors.GameSelector.three_obj_in_the_future_by_username(
@@ -91,3 +93,22 @@ class TeamsView(APIView):
         teams = selectors.TeamSelector.three_obj_by_username(username)
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
         return Response(data={'teams': team_serializer.data}, status=status.HTTP_200_OK)
+
+
+class ListGamesView(APIView):
+
+    def get(self, request, username, *args, **kwargs):
+        games = selectors.GameSelector.many_obj_in_the_future_by_username(
+            username)
+        game_serializer: GameSerializer = GameSerializer(games, many=True)
+        return Response(data={'games': game_serializer.data}, status=status.HTTP_200_OK)
+
+class DetailGameView(APIView):
+
+    def get(self, request, id, *args, **kwargs):
+        try:
+            game = selectors.GameSelector.one_obj_by_id(id)
+            game_serializer: GameSerializer = GameSerializer(game)
+            return Response(data={'game': game_serializer.data}, status=status.HTTP_200_OK)
+        except Game.DoesNotExist as e:
+            return Response(data={"error": "error, user does not exist"}, status=status.HTTP_404_NOT_FOUND)
