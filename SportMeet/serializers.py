@@ -4,12 +4,16 @@ from rest_framework import serializers
 from SportMeet import models
 from SportMeet.models import Profile
 
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=Profile
-        exclude = []
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model=User
-        fields = ('id','username')
+        model = User
+        fields = ('id', 'username', 'password')
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(required=False)
+
+    class Meta:
+        model = Profile
+        exclude = []
