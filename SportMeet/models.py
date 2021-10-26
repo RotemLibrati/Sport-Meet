@@ -6,7 +6,8 @@ class Profile(models.Model):
     email = models.CharField(max_length=100, null=True,
                              blank=True, unique=True)
     city = models.CharField(max_length=100, default='')
-    sex = models.CharField(max_length=10)
+    sex = models.CharField(max_length=10, choices=[
+                           ('Male', 'Male'), ('Female', 'Female')])
     age = models.IntegerField(default=0)
 
 
