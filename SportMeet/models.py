@@ -1,8 +1,10 @@
 from django.db import models
 from datetime import datetime
+from django.contrib.auth.models import User
 
 
 class Profile(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     email = models.CharField(max_length=100, null=True,
                              blank=True, unique=True)
     city = models.CharField(max_length=100, default='')
