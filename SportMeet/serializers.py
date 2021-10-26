@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models import fields
 from rest_framework import serializers
 from SportMeet import models
-from SportMeet.models import Profile
+from SportMeet.models import Game, Profile, Team
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -16,4 +16,16 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
+        exclude = []
+
+
+class GameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Game
+        exclude = []
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
         exclude = []
