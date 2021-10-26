@@ -2,7 +2,7 @@ from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from SportMeet.serializers import ProfileSerializer, UserSerializer
+from SportMeet.serializers import GameSerializer, ProfileSerializer, TeamSerializer, UserSerializer
 from SportMeet import db_updater, selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login, logout
@@ -29,8 +29,8 @@ class ListUsersView(APIView):
 
 
 class LoginView(APIView):
-    authentication_classes = []
-    permission_classes = []
+    # authentication_classes = []
+    # permission_classes = []
 
     def post(self, request, *args, **kwargs):
         username = request.data.get('username', None)
@@ -55,22 +55,39 @@ class LogoutView(APIView):
 
 
 class RegisterView(APIView):
-    authentication_classes = []
-    permission_classes = []
+    # authentication_classes = []
+    # permission_classes = []
 
     def post(self, request, *args, **kwargs):
         user_serializer = UserSerializer(data=request.data)
         profile_serializer = ProfileSerializer(data=request.data)
         if user_serializer.is_valid():
             user = db_updater.UserUpdater.create_new_user(
-                data=user_serializer.data)
+                data=user_serializer.validated_data)
             if profile_serializer.is_valid():
                 db_updater.ProfileUpdater.create_new_profile_for_user(
-                    user, profile_serializer.data)
+                    user, profile_serializer.validated_data)
             try:
-                profile_data = profile_serializer.data
+                profile_data = profile_serializer.validated_data
             except Exception as e:
                 profile_data = None
-            return Response(data={'user': user_serializer.data, 'profile': profile_data}, status=status.HTTP_201_CREATED)
+            return Response(data={'user': user_serializer.validated_data, 'profile': profile_data}, status=status.HTTP_201_CREATED)
         else:
             return Response(data={'errors': f'{user_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GamesView(APIView):
+
+    def get(self, request, username, *args, **kwargs):
+        games = selectors.GameSelector.three_obj_in_the_future_by_username(
+            username)
+        game_serializer: GameSerializer = GameSerializer(games, many=True)
+        return Response(data={'games': game_serializer.data}, status=status.HTTP_200_OK)
+
+
+class TeamsView(APIView):
+
+    def get(self, request, username, *args, **kwargs):
+        teams = selectors.TeamSelector.three_obj_by_username(username)
+        team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
+        return Response(data={'teams': team_serializer.data}, status=status.HTTP_200_OK)

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
@@ -8,4 +8,6 @@ urlpatterns = [
     path('logout', views.LogoutView.as_view()),
     path('users', views.ListUsersView.as_view()),
     path('register', views.RegisterView.as_view()),
+    re_path('^games/(?P<username>.+)/$', views.GamesView.as_view()),
+    re_path('^teams/(?P<username>.+)/$', views.TeamsView.as_view()),
 ]
