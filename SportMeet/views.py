@@ -57,8 +57,8 @@ class LogoutView(APIView):
 
 
 class RegisterView(APIView):
-    # authentication_classes = []
-    # permission_classes = []
+    authentication_classes = []
+    permission_classes = []
 
     def post(self, request, *args, **kwargs):
         user_serializer = UserSerializer(data=request.data)
