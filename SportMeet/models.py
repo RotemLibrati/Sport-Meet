@@ -9,7 +9,7 @@ class Profile(models.Model):
                              blank=True, unique=True)
     city = models.CharField(max_length=100, default='')
     sex = models.CharField(max_length=10, choices=[
-                           ('Male', 'Male'), ('Female', 'Female')])
+                           ('זכר', 'זכר'), ('נקבה', 'נקבה')])
     age = models.IntegerField(default=0)
 
 
