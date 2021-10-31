@@ -94,6 +94,12 @@ class TeamsView(APIView):
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
         return Response(data={'teams': team_serializer.data}, status=status.HTTP_200_OK)
 
+class AllTeamsView(APIView):
+
+    def get(self, request, username, *args, **kwargs):
+        teams = selectors.TeamSelector.all_obj_by_username(username)
+        team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
+        return Response(data={'teams' : team_serializer.data}, status=status.HTTP_200_OK)
 
 class ListGamesView(APIView):
 

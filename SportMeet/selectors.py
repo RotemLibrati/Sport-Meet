@@ -57,5 +57,10 @@ class TeamSelector:
     @staticmethod
     def three_obj_by_username(username):
         user: User = User.objects.get(username=username)
-        teams = user.profile.team.all()[0:4]
+        teams = user.profile.team.all()[0:3]
+        return teams
+
+    def all_obj_by_username(username):
+        user: User = User.objects.get(username=username)
+        teams = user.profile.team.all()
         return teams
