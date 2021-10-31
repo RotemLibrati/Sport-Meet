@@ -20,6 +20,7 @@ class Team(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     sport = models.CharField(max_length=50, choices=[(
         'football', 'football'), ('basketball', 'basketball'), ('tennis', 'tennis')])
+    #type = models.CharField(max_length=20, choices=[("פומבית", "פומבית"), ("פרטית", "פרטית")])
 
 
 class Notification(models.Model):
