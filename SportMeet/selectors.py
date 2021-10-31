@@ -1,6 +1,8 @@
+from datetime import time
 from SportMeet.models import Profile, Team, Game
 from django.contrib.auth.models import User
-from datetime import datetime
+#from datetime import datetime
+from django.utils import timezone
 
 
 class ProfileSelector:
@@ -30,16 +32,16 @@ class GameSelector:
     def three_obj_in_the_future_by_username(username: str):
         user = User.objects.get(username=username)
         teams = user.profile.team.all()
-        _now = datetime.now()
+        _now = timezone.now()
         games = Game.objects.filter(
-            team__in=teams, event_time__gte=_now).order_by('event_time')[0:4]
+            team__in=teams, event_time__gte=_now).order_by('event_time')[0:3]
         return games
     
     @staticmethod
     def many_obj_in_the_future_by_username(username: str):
         user = User.objects.get(username=username)
         teams = user.profile.team.all()
-        _now = datetime.now()
+        _now = timezone.now()
         games = Game.objects.filter(
             team__in=teams, event_time__gte=_now).order_by('event_time')
         return games
