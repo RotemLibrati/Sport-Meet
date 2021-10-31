@@ -12,12 +12,17 @@ from django.contrib.auth import authenticate, login, logout
 
 class ListProfilesView(APIView):
     permission_classes = [AllowAny]
-
-    def get(self, request, *args, **kwargs):
-        profiles = selectors.ProfileSelector.all_objects()
-        serializer = ProfileSerializer(profiles, many=True)
-        profiles_data = serializer.data
-        return Response(data=profiles_data, status=status.HTTP_200_OK)
+    def get(self, request, username=None, *args, **kwargs):
+        if not username:
+            profiles = selectors.ProfileSelector.all_objects()
+            serializer = ProfileSerializer(profiles, many=True)
+            profiles_data = serializer.data
+            return Response(data=profiles_data, status=status.HTTP_200_OK)
+        else:
+            profile = selectors.ProfileSelector.get_details_profile(username)
+            serializer = ProfileSerializer(profile)
+            profiles_data = serializer.data
+            return Response(data=profiles_data, status=status.HTTP_200_OK)
 
 
 class ListUsersView(APIView):

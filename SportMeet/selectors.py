@@ -19,6 +19,14 @@ class ProfileSelector:
             raise e
         return profile
 
+    @staticmethod
+    def get_details_profile(username):
+        user = User.objects.get(username=username)
+        profile = Profile.objects.get(user=user)
+        return profile
+
+    
+
 
 class UserSelector:
     @staticmethod
@@ -60,6 +68,7 @@ class TeamSelector:
         teams = user.profile.team.all()[0:3]
         return teams
 
+    @staticmethod
     def all_obj_by_username(username):
         user: User = User.objects.get(username=username)
         teams = user.profile.team.all()

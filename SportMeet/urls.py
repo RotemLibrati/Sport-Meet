@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('profiles', views.ListProfilesView.as_view()),
+    re_path('^profiles/(?P<username>.+)/$', views.ListProfilesView.as_view()),
     path('login', views.LoginView.as_view()),
     path('logout', views.LogoutView.as_view()),
     path('users', views.ListUsersView.as_view()),
