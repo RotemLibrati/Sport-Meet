@@ -1,10 +1,12 @@
 from copy import error
+import re
+from datetime import datetime
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from SportMeet.models import Game
-from SportMeet.serializers import GameSerializer, ProfileSerializer, TeamSerializer, UserSerializer
+from SportMeet.models import Game, GameField, Profile
+from SportMeet.serializers import GameSerializer, ProfileSerializer, TeamSerializer, UserSerializer, GameFieldSerializer
 from SportMeet import db_updater, selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login, logout
@@ -82,6 +84,46 @@ class RegisterView(APIView):
         else:
             return Response(data={'errors': f'{user_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
 
+class CreateTeamView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request, *args, **kwargs):
+        team_serializer = TeamSerializer(data=request.data)
+        #admin = Profile.objects.get(user__username='admin')
+        if team_serializer.is_valid():
+            admin: Profile = Profile.objects.get(user__username='admin') # need to remove this line after authentication
+            db_updater.TeamUpdater.create_new_team(admin=admin, data=team_serializer.validated_data)
+            return Response(data={'team': team_serializer.validated_data}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(data={'errors': f'{team_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
+
+# class CreateGameView(APIView):
+#     authentication_classes = []
+#     permission_classes = []
+#     def post(self, request, team=None, *args, **kwargs):
+#         if not team:
+#             team_serializer = TeamSerializer(data=request.data)
+#             game_serializer = GameSerializer(data=request.data)
+#             game_field_serializer = GameFieldSerializer(data=request.data)
+#             if game_field_serializer.is_valid():
+#                 game_field = db_updater.GameFieldUpdater.create_new_field_game(data=game_field_serializer.validated_data)
+#             if team_serializer.is_valid():
+#                 team = db_updater.TeamUpdater.create_new_team(data=team_serializer.validated_data)
+#                 breakpoint()
+#                 if game_serializer.is_valid():
+#                     breakpoint()
+#                     db_updater.GameUpdater.create_new_game(team, game_field, game_serializer.validated_data)
+#                 try:
+#                     game_data = game_serializer.validated_data
+#                     game_field = game_field_serializer.validated_data
+#                 except Exception as e:
+#                     game_data = None
+#                     game_field = None
+#                 return Response(data={'team' : team_serializer.validated_data, 'game': game_data,
+#                  'game_filed': game_field}, status=status.HTTP_201_CREATED)
+#             else:
+#                 return Response(data={'errors': f'{team_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
 
 class RecentGamesView(APIView):
 

@@ -1,4 +1,5 @@
-from SportMeet.models import Profile
+from datetime import datetime
+from SportMeet.models import GameField, Profile, Team, Game
 from SportMeet import selectors
 from django.contrib.auth.models import User
 
@@ -27,3 +28,25 @@ class UserUpdater:
         user = User(**data)
         user.save()
         return user
+
+class GameUpdater:
+    @staticmethod
+    def create_new_game(team: Team, game_field: GameField, data: dict ):
+        breakpoint()
+        game : Game = Game(team=team,location=game_field, **data)
+        game.save()
+        return game
+
+class GameFieldUpdater:
+    @staticmethod
+    def create_new_field_game(data: dict):
+        game_field : GameField = GameField(**data)
+        game_field.save()
+        return game_field
+
+class TeamUpdater:
+    @staticmethod
+    def create_new_team(admin: Profile, data: dict):
+        team : Team = Team(admin=admin, **data)
+        team.save()
+        return team

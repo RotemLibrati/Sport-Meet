@@ -15,11 +15,11 @@ class Profile(models.Model):
 
 class Team(models.Model):
     admin = models.ForeignKey(
-        Profile, null=True, on_delete=models.SET_NULL, related_name='adminteam')
+         Profile, null=True, on_delete=models.SET_NULL, related_name='adminteam', blank=True)
     members = models.ManyToManyField(Profile, blank=True, related_name='team')
     name = models.CharField(max_length=50, null=True, blank=True)
     sport = models.CharField(max_length=50, choices=[(
-        'football', 'football'), ('basketball', 'basketball'), ('tennis', 'tennis')])
+        'כדורגל', 'כדורגל'), ('כדורסל', 'כדורסל'), ('טניס', 'טניס')])
     #type = models.CharField(max_length=20, choices=[("פומבית", "פומבית"), ("פרטית", "פרטית")])
 
 
