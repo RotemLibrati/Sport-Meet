@@ -24,6 +24,9 @@ class ProfileUpdater:
 class UserUpdater:
     @staticmethod
     def create_new_user(data: dict):
+        _password = data['password']
+        del data['password']
         user = User(**data)
+        user.set_password(_password)
         user.save()
         return user
