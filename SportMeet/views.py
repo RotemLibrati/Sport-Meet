@@ -11,7 +11,8 @@ from django.contrib.auth import authenticate, login, logout
 
 
 class ListProfilesView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, username=None, *args, **kwargs):
         if not username:
             profiles = selectors.ProfileSelector.all_objects()
@@ -62,20 +63,20 @@ class LogoutView(APIView):
 
 
 class RegisterView(APIView):
-    authentication_classes = []
-    permission_classes = []
+    # authentication_classes = []
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         user_serializer = UserSerializer(data=request.data)
         profile_serializer = ProfileSerializer(data=request.data)
+        profile_serializer.is_valid()
         if user_serializer.is_valid():
             user = db_updater.UserUpdater.create_new_user(
-                data=user_serializer.validated_data)
-            if profile_serializer.is_valid():
-                db_updater.ProfileUpdater.create_new_profile_for_user(
-                    user, profile_serializer.validated_data)
+                data=user_serializer.data)
+            profile = db_updater.ProfileUpdater.create_new_profile_for_user(
+                user, profile_serializer.data)
             try:
-                profile_data = profile_serializer.validated_data
+                profile_data = ProfileSerializer(profile).data
             except Exception as e:
                 profile_data = None
             return Response(data={'user': user_serializer.validated_data, 'profile': profile_data}, status=status.HTTP_201_CREATED)
@@ -99,12 +100,14 @@ class TeamsView(APIView):
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
         return Response(data={'teams': team_serializer.data}, status=status.HTTP_200_OK)
 
+
 class AllTeamsView(APIView):
 
     def get(self, request, username, *args, **kwargs):
         teams = selectors.TeamSelector.all_obj_by_username(username)
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
-        return Response(data={'teams' : team_serializer.data}, status=status.HTTP_200_OK)
+        return Response(data={'teams': team_serializer.data}, status=status.HTTP_200_OK)
+
 
 class ListGamesView(APIView):
 
@@ -113,6 +116,7 @@ class ListGamesView(APIView):
             username)
         game_serializer: GameSerializer = GameSerializer(games, many=True)
         return Response(data={'games': game_serializer.data}, status=status.HTTP_200_OK)
+
 
 class DetailGameView(APIView):
 
