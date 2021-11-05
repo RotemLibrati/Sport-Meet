@@ -86,18 +86,24 @@ class RegisterView(APIView):
             return Response(data={'errors': f'{user_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
 
 class CreateTeamView(APIView):
-    authentication_classes = []
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        team_serializer = TeamSerializer(data=request.data)
-        #admin = Profile.objects.get(user__username='admin')
-        if team_serializer.is_valid():
-            admin: Profile = Profile.objects.get(user__username='admin') # need to remove this line after authentication
-            db_updater.TeamUpdater.create_new_team(admin=admin, data=team_serializer.validated_data)
-            return Response(data={'team': team_serializer.validated_data}, status=status.HTTP_201_CREATED)
-        else:
-            return Response(data={'errors': f'{team_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
+        name=request.data['name']
+        sport=request.data['sport']
+        admin=request.user.profile
+        members=[request.user.profile]
+        try:
+            team = db_updater.TeamUpdater.create_new_team(admin=admin, members=members, sport=sport, name=name)
+        # team_serializer = TeamSerializer(data=request.data)
+        # if team_serializer.is_valid():
+        #     admin = request.user
+        #     members = [request.user]
+        #     db_updater.TeamUpdater.create_new_team(admin=admin, members=members, data=team_serializer.validated_data)
+        
+            return Response(data={'team': TeamSerializer(team).data}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
 # class CreateGameView(APIView):
 #     authentication_classes = []

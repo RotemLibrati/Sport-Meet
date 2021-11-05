@@ -26,10 +26,13 @@ class GameSerializer(serializers.ModelSerializer):
 
 
 class TeamSerializer(serializers.ModelSerializer):
+    members = ProfileSerializer(required=False, many=True)
+    admin = ProfileSerializer()
+
     class Meta:
         model = Team
         exclude = []
-        
+
 
 class GameFieldSerializer(serializers.ModelSerializer):
     class Meta:

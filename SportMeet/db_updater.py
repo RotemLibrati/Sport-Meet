@@ -32,24 +32,29 @@ class UserUpdater:
         user.save()
         return user
 
+
 class GameUpdater:
     @staticmethod
-    def create_new_game(team: Team, game_field: GameField, data: dict ):
+    def create_new_game(team: Team, game_field: GameField, data: dict):
         breakpoint()
-        game : Game = Game(team=team,location=game_field, **data)
+        game: Game = Game(team=team, location=game_field, **data)
         game.save()
         return game
+
 
 class GameFieldUpdater:
     @staticmethod
     def create_new_field_game(data: dict):
-        game_field : GameField = GameField(**data)
+        game_field: GameField = GameField(**data)
         game_field.save()
         return game_field
 
+
 class TeamUpdater:
     @staticmethod
-    def create_new_team(admin: Profile, data: dict):
-        team : Team = Team(admin=admin, **data)
+    def create_new_team(admin: Profile, members: list, name: str, sport: str):
+        team: Team = Team(admin=admin, name=name, sport=sport)
         team.save()
+        for m in members:
+            team.members.add(m)
         return team
