@@ -22,6 +22,7 @@ class ListProfilesView(APIView):
             profiles_data = serializer.data
             return Response(data=profiles_data, status=status.HTTP_200_OK)
         else:
+            #breakpoint()
             profile = selectors.ProfileSelector.get_details_profile(username)
             serializer = ProfileSerializer(profile)
             profiles_data = serializer.data
@@ -39,9 +40,6 @@ class ListUsersView(APIView):
 
 
 class LoginView(APIView):
-    # authentication_classes = []
-    # permission_classes = []
-
     def post(self, request, *args, **kwargs):
         username = request.data.get('username', None)
         password = request.data.get('password', None)
@@ -65,7 +63,6 @@ class LogoutView(APIView):
 
 
 class RegisterView(APIView):
-    # authentication_classes = []
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -95,12 +92,6 @@ class CreateTeamView(APIView):
         members=[request.user.profile]
         try:
             team = db_updater.TeamUpdater.create_new_team(admin=admin, members=members, sport=sport, name=name)
-        # team_serializer = TeamSerializer(data=request.data)
-        # if team_serializer.is_valid():
-        #     admin = request.user
-        #     members = [request.user]
-        #     db_updater.TeamUpdater.create_new_team(admin=admin, members=members, data=team_serializer.validated_data)
-        
             return Response(data={'team': TeamSerializer(team).data}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
@@ -133,7 +124,7 @@ class CreateTeamView(APIView):
 #                 return Response(data={'errors': f'{team_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
 
 class RecentGamesView(APIView):
-
+    permission_classes = [IsAuthenticated]
     def get(self, request, username, *args, **kwargs):
         games = selectors.GameSelector.three_obj_in_the_future_by_username(
             username)
@@ -142,7 +133,7 @@ class RecentGamesView(APIView):
 
 
 class TeamsView(APIView):
-
+    permission_classes = [IsAuthenticated]
     def get(self, request, username, *args, **kwargs):
         teams = selectors.TeamSelector.three_obj_by_username(username)
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
@@ -150,7 +141,7 @@ class TeamsView(APIView):
 
 
 class AllTeamsView(APIView):
-
+    permission_classes = [IsAuthenticated]
     def get(self, request, username, *args, **kwargs):
         teams = selectors.TeamSelector.all_obj_by_username(username)
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
@@ -158,7 +149,7 @@ class AllTeamsView(APIView):
 
 
 class ListGamesView(APIView):
-
+    permission_classes = [IsAuthenticated]
     def get(self, request, username, *args, **kwargs):
         games = selectors.GameSelector.many_obj_in_the_future_by_username(
             username)
