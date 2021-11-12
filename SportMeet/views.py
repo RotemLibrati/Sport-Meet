@@ -1,6 +1,6 @@
 from copy import error
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,11 +22,28 @@ class ListProfilesView(APIView):
             profiles_data = serializer.data
             return Response(data=profiles_data, status=status.HTTP_200_OK)
         else:
-            #breakpoint()
+            # breakpoint()
             profile = selectors.ProfileSelector.get_details_profile(username)
             serializer = ProfileSerializer(profile)
             profiles_data = serializer.data
             return Response(data=profiles_data, status=status.HTTP_200_OK)
+
+    def put(self, request, username, *args, **kwargs):
+        email = request.data['email']
+        city = request.data['city']
+        age = request.data['age']
+        profile = selectors.ProfileSelector.get_details_profile(username)
+        profile.email = email
+        profile.city = city
+        profile.age = age
+        update_profile = db_updater.ProfileUpdater.update_deailts_profile(
+            profile)
+        serializer = ProfileSerializer(update_profile)
+        try:
+            profiles_data = serializer.data
+            return Response(data=profiles_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ListUsersView(APIView):
@@ -82,20 +99,42 @@ class RegisterView(APIView):
         else:
             return Response(data={'errors': f'{user_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class CreateTeamView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        name=request.data['name']
-        sport=request.data['sport']
-        admin=request.user.profile
-        members=[request.user.profile]
+        name = request.data['name']
+        sport = request.data['sport']
+        admin = request.user.profile
+        members = [request.user.profile]
         try:
-            team = db_updater.TeamUpdater.create_new_team(admin=admin, members=members, sport=sport, name=name)
+            team = db_updater.TeamUpdater.create_new_team(
+                admin=admin, members=members, sport=sport, name=name)
             return Response(data={'team': TeamSerializer(team).data}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class CreateNewGameView(APIView):
+    def post(self, request, *args, **kwargs):
+        new_team = db_updater.TeamUpdater.create_new_team(
+            sport="טניס", name="tenniss")
+        new_location = db_updater.GameFieldUpdater.create_new_field_game(
+            city="באר שבע", address="גולטיים")
+
+        authentication_classes = []
+        #game_serializer = GameSerializer(data=request.data)
+
+        # if game_serializer.is_valid():
+        event_time = datetime.now()
+
+        game = db_updater.GameUpdater.create_new_game(
+            team=new_team, location=new_location, event_time=event_time)
+        try:
+            return Response(data={'game': GameSerializer(game).data, 'team': TeamSerializer(new_team).data, 'location': GameFieldSerializer(new_location).data}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(data={'error': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 # class CreateGameView(APIView):
 #     authentication_classes = []
 #     permission_classes = []
@@ -123,8 +162,10 @@ class CreateTeamView(APIView):
 #             else:
 #                 return Response(data={'errors': f'{team_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class RecentGamesView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request, username, *args, **kwargs):
         games = selectors.GameSelector.three_obj_in_the_future_by_username(
             username)
@@ -134,6 +175,7 @@ class RecentGamesView(APIView):
 
 class TeamsView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request, username, *args, **kwargs):
         teams = selectors.TeamSelector.three_obj_by_username(username)
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
@@ -142,6 +184,7 @@ class TeamsView(APIView):
 
 class AllTeamsView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request, username, *args, **kwargs):
         teams = selectors.TeamSelector.all_obj_by_username(username)
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
@@ -150,6 +193,7 @@ class AllTeamsView(APIView):
 
 class ListGamesView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request, username, *args, **kwargs):
         games = selectors.GameSelector.many_obj_in_the_future_by_username(
             username)
@@ -166,3 +210,12 @@ class DetailGameView(APIView):
             return Response(data={'game': game_serializer.data}, status=status.HTTP_200_OK)
         except Game.DoesNotExist as e:
             return Response(data={"error": "error, user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class GameFieldView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        game_field = selectors.GameFieldSelector.all_game_field()
+        game_field_serializer: GameFieldSerializer = GameFieldSerializer(
+            game_field, many=True)
+        return Response(data={'locations': game_field_serializer.data}, status=status.HTTP_200_OK)

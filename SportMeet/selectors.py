@@ -1,5 +1,5 @@
 from datetime import time
-from SportMeet.models import Profile, Team, Game
+from SportMeet.models import GameField, Profile, Team, Game
 from django.contrib.auth.models import User
 #from datetime import datetime
 from django.utils import timezone
@@ -73,3 +73,10 @@ class TeamSelector:
         user: User = User.objects.get(username=username)
         teams = user.profile.team.all()
         return teams
+
+class GameFieldSelector:
+
+    @staticmethod
+    def all_game_field():
+        game_field: GameField = GameField.objects.all()
+        return game_field
