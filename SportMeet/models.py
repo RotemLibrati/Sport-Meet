@@ -20,6 +20,7 @@ class Team(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     sport = models.CharField(max_length=50, choices=[(
         'כדורגל', 'כדורגל'), ('כדורסל', 'כדורסל'), ('טניס', 'טניס')])
+    anonymous = models.BooleanField(default=False)
     #type = models.CharField(max_length=20, choices=[("פומבית", "פומבית"), ("פרטית", "פרטית")])
 
 
