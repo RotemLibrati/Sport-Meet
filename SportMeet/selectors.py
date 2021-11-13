@@ -65,18 +65,34 @@ class TeamSelector:
     @staticmethod
     def three_obj_by_username(username):
         user: User = User.objects.get(username=username)
-        teams = user.profile.team.all()[0:3]
+        teams = user.profile.team.filter(anonymous=False)[0:3]
         return teams
 
     @staticmethod
     def all_obj_by_username(username):
         user: User = User.objects.get(username=username)
-        teams = user.profile.team.all()
+        teams = user.profile.team.filter(anonymous=False)
         return teams
+    
+    @staticmethod
+    def get_obj_by_id(id):
+        try:
+            team = Team.objects.get(pk=id)
+        except Team.DoesNotExist as e:
+            raise e
+        return team
 
 class GameFieldSelector:
 
     @staticmethod
     def all_game_field():
         game_field: GameField = GameField.objects.all()
+        return game_field
+
+    @staticmethod
+    def get_game_field_by_id(id):
+        try:
+            game_field = GameField.objects.get(pk=id)
+        except GameField.DoesNotExist as e:
+            raise e
         return game_field
