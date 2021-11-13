@@ -56,8 +56,8 @@ class GameFieldUpdater:
 
 class TeamUpdater:
     @staticmethod
-    def create_new_team(admin=None, members=[], name=None, sport=None):
-        team: Team = Team(admin=admin, name=name, sport=sport)
+    def create_new_team(admin=None, members=[], name=None, sport=None, anonymous=False):
+        team: Team = Team(admin=admin, name=name, sport=sport, anonymous=anonymous)
         team.save()
         for m in members:
             team.members.add(m)
