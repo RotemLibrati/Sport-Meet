@@ -1,5 +1,5 @@
 from copy import error
-import re
+import uuid
 from datetime import datetime, timedelta
 from rest_framework import permissions
 from rest_framework.views import APIView
@@ -117,50 +117,29 @@ class CreateTeamView(APIView):
 
 
 class CreateNewGameView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
-        new_team = db_updater.TeamUpdater.create_new_team(
-            sport="טניס", name="tenniss")
-        new_location = db_updater.GameFieldUpdater.create_new_field_game(
-            city="באר שבע", address="גולטיים")
-
-        authentication_classes = []
-        #game_serializer = GameSerializer(data=request.data)
-
-        # if game_serializer.is_valid():
-        event_time = datetime.now()
-
-        game = db_updater.GameUpdater.create_new_game(
-            team=new_team, location=new_location, event_time=event_time)
         try:
-            return Response(data={'game': GameSerializer(game).data, 'team': TeamSerializer(new_team).data, 'location': GameFieldSerializer(new_location).data}, status=status.HTTP_201_CREATED)
+            team = selectors.TeamSelector.get_obj_by_id(request.data["team"])
+        except:
+            team = db_updater.TeamUpdater.create_new_team(sport=request.data["type"],
+                                                          name=uuid.uuid1(), admin=request.user.profile,
+                                                          anonymous=True, members=[request.user.profile])
+        try:
+            location = selectors.GameFieldSelector.get_game_field_by_id(
+                request.data["location"])
+        except:
+            location = None
+        date = request.data["date"].replace(
+            ".", "-") + " " + request.data["time"]
+        event_time = datetime.strptime(date, '%d-%m-%Y %H:%M')
+        game = db_updater.GameUpdater.create_new_game(
+            team=team, location=location, event_time=event_time)
+        try:
+            return Response(data={'game': GameSerializer(game).data, 'team': TeamSerializer(team).data,
+                                  'location': GameFieldSerializer(location).data}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(data={'error': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
-# class CreateGameView(APIView):
-#     authentication_classes = []
-#     permission_classes = []
-#     def post(self, request, team=None, *args, **kwargs):
-#         if not team:
-#             team_serializer = TeamSerializer(data=request.data)
-#             game_serializer = GameSerializer(data=request.data)
-#             game_field_serializer = GameFieldSerializer(data=request.data)
-#             if game_field_serializer.is_valid():
-#                 game_field = db_updater.GameFieldUpdater.create_new_field_game(data=game_field_serializer.validated_data)
-#             if team_serializer.is_valid():
-#                 team = db_updater.TeamUpdater.create_new_team(data=team_serializer.validated_data)
-#                 breakpoint()
-#                 if game_serializer.is_valid():
-#                     breakpoint()
-#                     db_updater.GameUpdater.create_new_game(team, game_field, game_serializer.validated_data)
-#                 try:
-#                     game_data = game_serializer.validated_data
-#                     game_field = game_field_serializer.validated_data
-#                 except Exception as e:
-#                     game_data = None
-#                     game_field = None
-#                 return Response(data={'team' : team_serializer.validated_data, 'game': game_data,
-#                  'game_filed': game_field}, status=status.HTTP_201_CREATED)
-#             else:
-#                 return Response(data={'errors': f'{team_serializer.errors}'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RecentGamesView(APIView):
@@ -202,7 +181,7 @@ class ListGamesView(APIView):
 
 
 class DetailGameView(APIView):
-
+    permission_classes = [IsAuthenticated]
     def get(self, request, id, *args, **kwargs):
         try:
             game = selectors.GameSelector.one_obj_by_id(id)
@@ -213,7 +192,7 @@ class DetailGameView(APIView):
 
 
 class GameFieldView(APIView):
-
+    permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
         game_field = selectors.GameFieldSelector.all_game_field()
         game_field_serializer: GameFieldSerializer = GameFieldSerializer(
