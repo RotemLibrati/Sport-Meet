@@ -1,5 +1,5 @@
 from datetime import time
-from SportMeet.models import GameField, Profile, Team, Game
+from SportMeet.models import AppMessage, GameField, Profile, Team, Game
 from django.contrib.auth.models import User
 #from datetime import datetime
 from django.utils import timezone
@@ -96,3 +96,13 @@ class GameFieldSelector:
         except GameField.DoesNotExist as e:
             raise e
         return game_field
+
+class AppMessageSelector:
+
+    @staticmethod
+    def get_message_by_team_id(id):
+        try:
+            message = AppMessage.objects.filter(team__id=id)
+        except AppMessage.DoesNotExist as e:
+            raise e
+        return message

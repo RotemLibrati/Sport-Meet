@@ -5,8 +5,8 @@ from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from SportMeet.models import Game, GameField, Profile
-from SportMeet.serializers import GameSerializer, ProfileSerializer, TeamSerializer, UserSerializer, GameFieldSerializer
+from SportMeet.models import AppMessage, Game, GameField, Profile
+from SportMeet.serializers import AppMessageSerializer, GameSerializer, ProfileSerializer, TeamSerializer, UserSerializer, GameFieldSerializer
 from SportMeet import db_updater, selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import authenticate, login, logout
@@ -198,3 +198,12 @@ class GameFieldView(APIView):
         game_field_serializer: GameFieldSerializer = GameFieldSerializer(
             game_field, many=True)
         return Response(data={'locations': game_field_serializer.data}, status=status.HTTP_200_OK)
+
+class AppMessageView(APIView):
+    permissions_class = [AllowAny]
+    
+    def get(self, request, id, *args, **kwargs):
+        messages = selectors.AppMessageSelector.get_message_by_team_id(id)
+        messages_serializer : AppMessageSerializer = AppMessageSerializer(
+            messages, many=True)
+        return Response(data={"messages": messages_serializer.data}, status=status.HTTP_200_OK)
