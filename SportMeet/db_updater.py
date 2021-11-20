@@ -1,5 +1,6 @@
 from datetime import datetime
-from SportMeet.models import GameField, Profile, Team, Game
+from re import sub
+from SportMeet.models import AppMessage, GameField, Profile, Team, Game
 from SportMeet import selectors
 from django.contrib.auth.models import User
 
@@ -62,3 +63,15 @@ class TeamUpdater:
         for m in members:
             team.members.add(m)
         return team
+
+class AppMessageUpdater:
+    @staticmethod
+    def change_seen_for_messgae(message:AppMessage):
+        message.save()
+        return message
+
+    @staticmethod
+    def post_message(sender: Profile, subject: str, body: str, timestamp: datetime, team: Team):        
+        message: AppMessage = AppMessage(sender=sender, subject=subject, body=body, timestamp=timestamp, team=team)
+        message.save()
+        return message
