@@ -106,3 +106,11 @@ class AppMessageSelector:
         except AppMessage.DoesNotExist as e:
             raise e
         return message
+
+    @staticmethod
+    def get_message_by_id(id):
+        try:
+            message = AppMessage.objects.get(pk=id)
+        except AppMessage.DoesNotExist as e:
+            raise e
+        return message
