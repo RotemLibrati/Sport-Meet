@@ -1,11 +1,12 @@
 from copy import error
+from re import sub
 import uuid
 from datetime import datetime, timedelta
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from SportMeet.models import AppMessage, Game, GameField, Profile
+from SportMeet.models import AppMessage, Game, GameField, Profile, Team
 from SportMeet.serializers import AppMessageSerializer, GameSerializer, ProfileSerializer, TeamSerializer, UserSerializer, GameFieldSerializer
 from SportMeet import db_updater, selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -118,6 +119,7 @@ class CreateTeamView(APIView):
 
 class CreateNewGameView(APIView):
     permission_classes = [IsAuthenticated]
+    #breakpoint()
     def post(self, request, *args, **kwargs):
         try:
             team = selectors.TeamSelector.get_obj_by_id(request.data["team"])
@@ -132,7 +134,7 @@ class CreateNewGameView(APIView):
             location = None
         date = request.data["date"].replace(
             ".", "-") + " " + request.data["time"]
-        event_time = datetime.strptime(date, '%d-%m-%Y %H:%M')
+        event_time = datetime.strptime(date)
         game = db_updater.GameUpdater.create_new_game(
             team=team, location=location, event_time=event_time)
         try:
@@ -207,3 +209,33 @@ class AppMessageView(APIView):
         messages_serializer : AppMessageSerializer = AppMessageSerializer(
             messages, many=True)
         return Response(data={"messages": messages_serializer.data}, status=status.HTTP_200_OK)
+    
+    def put(self, request, id, *args, **kwargs):
+        message = selectors.AppMessageSelector.get_message_by_id(id)
+        seen = request.data['seen']
+        message.seen = seen
+        update_message = db_updater.AppMessageUpdater.change_seen_for_messgae(message=message)
+        serializer = AppMessageSerializer(update_message)
+        try:
+            message_data = serializer.data
+            return Response(data=message_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, teamID, *args, **kwargs):
+        sender = request.user.profile
+        #sender = selectors.ProfileSelector.get_details_profile('admin')
+        try:
+            team = selectors.TeamSelector.get_obj_by_id(teamID)
+        except Team.DoesNotExist as e:
+            return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+        timestamp = datetime.now()
+        subject = request.data['subject']
+        body = request.data['body']
+        new_msg = db_updater.AppMessageUpdater.post_message(sender, subject,body,timestamp, team)
+        try:
+            return Response(data={'message': AppMessageSerializer(new_msg).data}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(data={'error': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
