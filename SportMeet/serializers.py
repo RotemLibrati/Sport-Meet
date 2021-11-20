@@ -41,6 +41,8 @@ class GameFieldSerializer(serializers.ModelSerializer):
 
 
 class AppMessageSerializer(serializers.ModelSerializer):
+    sender = ProfileSerializer()
+    
     class Meta:
         model = AppMessage
         exclude = []
