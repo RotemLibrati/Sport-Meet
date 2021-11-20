@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.db.models.expressions import F
 
 
 class Profile(models.Model):
@@ -32,10 +33,12 @@ class Notification(models.Model):
 
 
 class AppMessage(models.Model):
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, default=None)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     subject = models.CharField(max_length=100)
     body = models.CharField(max_length=500)
     timestamp = models.DateTimeField(default=datetime.now)
+    seen = models.BooleanField(default=False)
 
 
 class GameField(models.Model):
