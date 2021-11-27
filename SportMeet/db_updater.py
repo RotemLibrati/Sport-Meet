@@ -1,6 +1,6 @@
 from datetime import datetime
 from re import sub
-from SportMeet.models import AppMessage, GameField, Profile, Team, Game
+from SportMeet.models import AppMessage, Attendance, GameField, Profile, Team, Game
 from SportMeet import selectors
 from django.contrib.auth.models import User
 
@@ -49,8 +49,8 @@ class GameUpdater:
 
 class GameFieldUpdater:
     @staticmethod
-    def create_new_field_game(city: str, address: str):
-        game_field: GameField = GameField(city=city, address=address)
+    def create_new_field_game(**kwargs):
+        game_field: GameField = GameField(**kwargs)
         game_field.save()
         return game_field
 
@@ -75,3 +75,16 @@ class AppMessageUpdater:
         message: AppMessage = AppMessage(sender=sender, subject=subject, body=body, timestamp=timestamp, team=team)
         message.save()
         return message
+
+class AttendanceUpdater:
+    @staticmethod
+    
+    def create_attendance(profile: Profile, game: Game, status):
+        attendace: Attendance = Attendance(profile=profile, game=game, status=status)
+        attendace.save()
+        return attendace
+
+    def change_attendance(attendance:Attendance):
+        attendance.save()
+        return attendance
+
