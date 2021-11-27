@@ -2,6 +2,7 @@ from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.db.models.expressions import F
+from django.db.models.fields import BooleanField, CharField
 
 
 class Profile(models.Model):
@@ -42,8 +43,15 @@ class AppMessage(models.Model):
 
 
 class GameField(models.Model):
-    city = models.CharField(max_length=20)
-    address = models.CharField(max_length=200)
+    name = models.CharField(max_length=100)
+    region = models.CharField(max_length=100)
+    street = models.CharField(max_length=200)
+    address_number = CharField(max_length=5)
+    is_for_football = BooleanField(default=False)
+    is_for_basketball = BooleanField(default=False)
+    is_for_tennis = BooleanField(default=False)
+    telephone = models.CharField(max_length=20)
+    availability = models.CharField(max_length=50)
 
 
 class Game(models.Model):
@@ -51,3 +59,9 @@ class Game(models.Model):
     event_time = models.DateTimeField()
     location = models.ForeignKey(
         GameField, null=True, on_delete=models.SET_NULL)
+
+class Attendance(models.Model):
+    status = models.CharField(max_length=10, null=True, blank=True, choices=[
+                           ('מגיע', 'מגיע'), ('לא מגיע', 'לא מגיע'), ('אולי מגיע', 'אולי מגיע')])
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
