@@ -6,10 +6,11 @@ from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from SportMeet.models import AppMessage, Game, GameField, Profile, Team
-from SportMeet.serializers import AppMessageSerializer, GameSerializer, ProfileSerializer, TeamSerializer, UserSerializer, GameFieldSerializer
+from SportMeet.models import AppMessage, Attendance, Game, GameField, Profile, Team
+from SportMeet.serializers import AppMessageSerializer, AttendanceSerializer, GameSerializer, ProfileSerializer, TeamSerializer, UserSerializer, GameFieldSerializer
 from SportMeet import db_updater, selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
+import csv
 from django.contrib.auth import authenticate, login, logout
 
 
@@ -119,7 +120,8 @@ class CreateTeamView(APIView):
 
 class CreateNewGameView(APIView):
     permission_classes = [IsAuthenticated]
-    #breakpoint()
+    # breakpoint()
+
     def post(self, request, *args, **kwargs):
         try:
             team = selectors.TeamSelector.get_obj_by_id(request.data["team"])
@@ -134,7 +136,7 @@ class CreateNewGameView(APIView):
             location = None
         date = request.data["date"].replace(
             ".", "-") + " " + request.data["time"]
-        event_time = datetime.strptime(date)
+        event_time = datetime.strptime(date, '%d-%m-%Y %H:%M')
         game = db_updater.GameUpdater.create_new_game(
             team=team, location=location, event_time=event_time)
         try:
@@ -184,6 +186,7 @@ class ListGamesView(APIView):
 
 class DetailGameView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request, id, *args, **kwargs):
         try:
             game = selectors.GameSelector.one_obj_by_id(id)
@@ -195,26 +198,29 @@ class DetailGameView(APIView):
 
 class GameFieldView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         game_field = selectors.GameFieldSelector.all_game_field()
         game_field_serializer: GameFieldSerializer = GameFieldSerializer(
             game_field, many=True)
         return Response(data={'locations': game_field_serializer.data}, status=status.HTTP_200_OK)
 
+
 class AppMessageView(APIView):
     permissions_class = [AllowAny]
-    
+
     def get(self, request, id, *args, **kwargs):
         messages = selectors.AppMessageSelector.get_message_by_team_id(id)
-        messages_serializer : AppMessageSerializer = AppMessageSerializer(
+        messages_serializer: AppMessageSerializer = AppMessageSerializer(
             messages, many=True)
         return Response(data={"messages": messages_serializer.data}, status=status.HTTP_200_OK)
-    
+
     def put(self, request, id, *args, **kwargs):
         message = selectors.AppMessageSelector.get_message_by_id(id)
         seen = request.data['seen']
         message.seen = seen
-        update_message = db_updater.AppMessageUpdater.change_seen_for_messgae(message=message)
+        update_message = db_updater.AppMessageUpdater.change_seen_for_messgae(
+            message=message)
         serializer = AppMessageSerializer(update_message)
         try:
             message_data = serializer.data
@@ -232,10 +238,55 @@ class AppMessageView(APIView):
         timestamp = datetime.now()
         subject = request.data['subject']
         body = request.data['body']
-        new_msg = db_updater.AppMessageUpdater.post_message(sender, subject,body,timestamp, team)
+        new_msg = db_updater.AppMessageUpdater.post_message(
+            sender, subject, body, timestamp, team)
         try:
             return Response(data={'message': AppMessageSerializer(new_msg).data}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(data={'error': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
-        
 
+
+class ImportData(APIView):
+    def get(self, request, *args, **kwargs):
+        file = open('Game Field Data.csv', 'r', newline='', encoding='UTF8')
+        reader = csv.reader(file)
+        next(reader)
+        for row in reader:
+            is_for_football = False
+            is_for_basketball = False
+            is_for_tennis = False
+            if not 'לא' in row[21]:
+                if 'כדורגל' in row[3] or 'מיני' in row[3] or 'שחבק' in row[3] or 'משולב' in row[3]:
+                    is_for_football = True
+                if 'כדורסל' in row[3] or 'משולב' in row[3]:
+                    is_for_basketball = True
+                if 'טניס' in row[3]:
+                    is_for_tennis=True
+                db_updater.GameFieldUpdater.create_new_field_game(name= row[4],
+                street=row[6], region=row[0], address_number=row[7], availability=row[16], is_for_football=is_for_football,
+                is_for_basketball=is_for_basketball,is_for_tennis=is_for_tennis, telephone=row[13])
+
+
+class AttendanceView(APIView):
+    def put(self, request, username, *args, **kwargs):
+        breakpoint()
+        attendance = int(request.data['index'])
+        if attendance == 0:
+            attendance='מגיע'
+        elif attendance == 1:
+            attendance='לא מגיע'
+        elif attendance == 2:
+            attendance = 'אולי מגיע'
+        profile = selectors.ProfileSelector.get_details_profile(username)
+        game = selectors.GameSelector.one_obj_by_id(request.data['game'])
+        try:
+            #breakpoint()
+            obj = selectors.AttendanceSelector.get_obj_by_profile_and_game(profile,game)
+            obj.status = attendance
+            obj = db_updater.AttendanceUpdater.change_attendance(obj)
+        except Attendance.DoesNotExist:
+            obj = db_updater.AttendanceUpdater.create_attendance(profile, game, attendance)
+        return Response(data={'attendance': AttendanceSerializer(obj).data}, status=status.HTTP_201_CREATED)
+        
+        # create get function that display in GameDetails if the user arraive or not ot maybe
+        
