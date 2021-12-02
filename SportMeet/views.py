@@ -266,10 +266,11 @@ class ImportData(APIView):
                 street=row[6], region=row[0], address_number=row[7], availability=row[16], is_for_football=is_for_football,
                 is_for_basketball=is_for_basketball,is_for_tennis=is_for_tennis, telephone=row[13])
 
+    # add response to get function
+
 
 class AttendanceView(APIView):
     def put(self, request, username, *args, **kwargs):
-        breakpoint()
         attendance = int(request.data['index'])
         if attendance == 0:
             attendance='מגיע'
@@ -288,5 +289,9 @@ class AttendanceView(APIView):
             obj = db_updater.AttendanceUpdater.create_attendance(profile, game, attendance)
         return Response(data={'attendance': AttendanceSerializer(obj).data}, status=status.HTTP_201_CREATED)
         
-        # create get function that display in GameDetails if the user arraive or not ot maybe
+    def get(self, request, username, game, *args, **kwargs):
+        profile = selectors.ProfileSelector.get_details_profile(username)
+        obj = selectors.AttendanceSelector.get_obj_by_profile_and_game(profile, game)
+        return Response(data={'attendance': AttendanceSerializer(obj).data}, status=status.HTTP_200_OK)
+        
         
