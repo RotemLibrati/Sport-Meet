@@ -13,6 +13,7 @@ urlpatterns = [
     path('create-team', views.CreateTeamView.as_view()),
     path('locations', views.GameFieldView.as_view()),
     path('import-data', views.ImportData.as_view()),
+    path('public-games', views.PublicGamesView.as_view()),
     re_path('^recent-games/(?P<username>.+)/$', views.RecentGamesView.as_view()),
     re_path('^get-attendance/(?P<username>.+)/(?P<game>.+)/$', views.AttendanceView.as_view()),
     re_path('^games/(?P<username>.+)/$', views.ListGamesView.as_view()),

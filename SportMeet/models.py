@@ -23,7 +23,7 @@ class Team(models.Model):
     sport = models.CharField(max_length=50, choices=[(
         'כדורגל', 'כדורגל'), ('כדורסל', 'כדורסל'), ('טניס', 'טניס')])
     anonymous = models.BooleanField(default=False)
-    #type = models.CharField(max_length=20, choices=[("פומבית", "פומבית"), ("פרטית", "פרטית")])
+    type = models.CharField(max_length=20, choices=[("פומבית", "פומבית"), ("פרטית", "פרטית")], default="פרטית")
 
 
 class Notification(models.Model):
@@ -63,5 +63,5 @@ class Game(models.Model):
 class Attendance(models.Model):
     status = models.CharField(max_length=10, null=True, blank=True, choices=[
                            ('מגיע', 'מגיע'), ('לא מגיע', 'לא מגיע'), ('אולי מגיע', 'אולי מגיע')])
-    profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)

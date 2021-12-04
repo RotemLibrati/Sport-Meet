@@ -1,6 +1,7 @@
 from datetime import time
 from SportMeet.models import AppMessage, Attendance, GameField, Profile, Team, Game
 from django.contrib.auth.models import User
+from SportMeet import db_updater
 #from datetime import datetime
 from django.utils import timezone
 
@@ -58,6 +59,13 @@ class GameSelector:
     def one_obj_by_id(id: str):
         return Game.objects.get(id=id)
 
+    @staticmethod
+    def get_games_of_team():
+        team = Team.objects.filter(type="פומבית")
+        _now = timezone.now()
+        games = Game.objects.filter(team__in=team, event_time__gte=_now).order_by('event_time')
+        return games
+
 
 
 class TeamSelector:
@@ -80,6 +88,11 @@ class TeamSelector:
             team = Team.objects.get(pk=id)
         except Team.DoesNotExist as e:
             raise e
+        return team
+    
+    @staticmethod
+    def get_public_team():
+        team = Team.objects.filter(type="פומבית")
         return team
 
 class GameFieldSelector:
@@ -122,6 +135,7 @@ class AttendanceSelector:
         try:
             attendance: Attendance = Attendance.objects.get(profile=profile, game=game)
         except Attendance.DoesNotExist as e:
-            raise e
+            game_obj = GameSelector.one_obj_by_id(game)
+            attendance: Attendance = db_updater.AttendanceUpdater.create_attendance(profile, game_obj, None)
         return attendance
 

@@ -281,7 +281,6 @@ class AttendanceView(APIView):
         profile = selectors.ProfileSelector.get_details_profile(username)
         game = selectors.GameSelector.one_obj_by_id(request.data['game'])
         try:
-            #breakpoint()
             obj = selectors.AttendanceSelector.get_obj_by_profile_and_game(profile,game)
             obj.status = attendance
             obj = db_updater.AttendanceUpdater.change_attendance(obj)
@@ -294,4 +293,9 @@ class AttendanceView(APIView):
         obj = selectors.AttendanceSelector.get_obj_by_profile_and_game(profile, game)
         return Response(data={'attendance': AttendanceSerializer(obj).data}, status=status.HTTP_200_OK)
         
-        
+class PublicGamesView(APIView):
+    def get(self, request, *args, **kwargs):
+        games = selectors.GameSelector.get_games_of_team()
+        serializer = GameSerializer(games, many=True)
+        games_serializer = serializer.data
+        return Response(data={'games': games_serializer}, status=status.HTTP_200_OK)
