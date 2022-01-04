@@ -3,6 +3,8 @@ from re import sub
 from SportMeet.models import AppMessage, Attendance, GameField, Profile, Team, Game
 from SportMeet import selectors
 from django.contrib.auth.models import User
+from cryptography.fernet import Fernet
+import os
 
 
 class ProfileUpdater:
@@ -18,6 +20,8 @@ class ProfileUpdater:
 
     @staticmethod
     def create_new_profile_for_user(user: User, data: dict):
+        if 'email' in data:
+            data['email'] = Profile.encode_and_encrypt_email(data['email'])
         profile: Profile = Profile(user=user, **data)
         profile.save()
         return profile
@@ -58,33 +62,36 @@ class GameFieldUpdater:
 class TeamUpdater:
     @staticmethod
     def create_new_team(admin=None, members=[], name=None, sport=None, anonymous=False):
-        team: Team = Team(admin=admin, name=name, sport=sport, anonymous=anonymous)
+        team: Team = Team(admin=admin, name=name,
+                          sport=sport, anonymous=anonymous)
         team.save()
         for m in members:
             team.members.add(m)
         return team
 
+
 class AppMessageUpdater:
     @staticmethod
-    def change_seen_for_messgae(message:AppMessage):
+    def change_seen_for_messgae(message: AppMessage):
         message.save()
         return message
 
     @staticmethod
-    def post_message(sender: Profile, subject: str, body: str, timestamp: datetime, team: Team):        
-        message: AppMessage = AppMessage(sender=sender, subject=subject, body=body, timestamp=timestamp, team=team)
+    def post_message(sender: Profile, subject: str, body: str, timestamp: datetime, team: Team):
+        message: AppMessage = AppMessage(
+            sender=sender, subject=subject, body=body, timestamp=timestamp, team=team)
         message.save()
         return message
+
 
 class AttendanceUpdater:
     @staticmethod
-    
     def create_attendance(profile: Profile, game: Game, status):
-        attendace: Attendance = Attendance(profile=profile, game=game, status=status)
+        attendace: Attendance = Attendance(
+            profile=profile, game=game, status=status)
         attendace.save()
         return attendace
 
-    def change_attendance(attendance:Attendance):
+    def change_attendance(attendance: Attendance):
         attendance.save()
         return attendance
-

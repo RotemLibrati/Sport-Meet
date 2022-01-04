@@ -95,6 +95,11 @@ class RegisterView(APIView):
                 user, profile_serializer.data)
             try:
                 profile_data = ProfileSerializer(profile).data
+                print(profile_data)
+                print('+++++++++++++++++++++++++++++')
+                profile_data['email'] = Profile.decrypt_and_decode_email(
+                    profile_data['email'])
+                print(profile_data)
             except Exception as e:
                 profile_data = None
             return Response(data={'user': user_serializer.validated_data, 'profile': profile_data}, status=status.HTTP_201_CREATED)
@@ -261,10 +266,11 @@ class ImportData(APIView):
                 if 'כדורסל' in row[3] or 'משולב' in row[3]:
                     is_for_basketball = True
                 if 'טניס' in row[3]:
-                    is_for_tennis=True
-                db_updater.GameFieldUpdater.create_new_field_game(name= row[4],
-                street=row[6], region=row[0], address_number=row[7], availability=row[16], is_for_football=is_for_football,
-                is_for_basketball=is_for_basketball,is_for_tennis=is_for_tennis, telephone=row[13])
+                    is_for_tennis = True
+                db_updater.GameFieldUpdater.create_new_field_game(name=row[4],
+                                                                  street=row[6], region=row[0], address_number=row[
+                                                                      7], availability=row[16], is_for_football=is_for_football,
+                                                                  is_for_basketball=is_for_basketball, is_for_tennis=is_for_tennis, telephone=row[13])
 
     # add response to get function
 
@@ -273,26 +279,30 @@ class AttendanceView(APIView):
     def put(self, request, username, *args, **kwargs):
         attendance = int(request.data['index'])
         if attendance == 0:
-            attendance='מגיע'
+            attendance = 'מגיע'
         elif attendance == 1:
-            attendance='לא מגיע'
+            attendance = 'לא מגיע'
         elif attendance == 2:
             attendance = 'אולי מגיע'
         profile = selectors.ProfileSelector.get_details_profile(username)
         game = selectors.GameSelector.one_obj_by_id(request.data['game'])
         try:
-            obj = selectors.AttendanceSelector.get_obj_by_profile_and_game(profile,game)
+            obj = selectors.AttendanceSelector.get_obj_by_profile_and_game(
+                profile, game)
             obj.status = attendance
             obj = db_updater.AttendanceUpdater.change_attendance(obj)
         except Attendance.DoesNotExist:
-            obj = db_updater.AttendanceUpdater.create_attendance(profile, game, attendance)
+            obj = db_updater.AttendanceUpdater.create_attendance(
+                profile, game, attendance)
         return Response(data={'attendance': AttendanceSerializer(obj).data}, status=status.HTTP_201_CREATED)
-        
+
     def get(self, request, username, game, *args, **kwargs):
         profile = selectors.ProfileSelector.get_details_profile(username)
-        obj = selectors.AttendanceSelector.get_obj_by_profile_and_game(profile, game)
+        obj = selectors.AttendanceSelector.get_obj_by_profile_and_game(
+            profile, game)
         return Response(data={'attendance': AttendanceSerializer(obj).data}, status=status.HTTP_200_OK)
-        
+
+
 class PublicGamesView(APIView):
     def get(self, request, *args, **kwargs):
         games = selectors.GameSelector.get_games_of_team()

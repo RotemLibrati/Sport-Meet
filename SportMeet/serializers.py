@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import fields
 from rest_framework import serializers
-from SportMeet import models
 from SportMeet.models import Attendance, Game, Profile, Team, GameField, AppMessage
 
 
@@ -13,6 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(required=False)
+    email = serializers.CharField()
 
     class Meta:
         model = Profile
@@ -33,9 +33,11 @@ class TeamSerializer(serializers.ModelSerializer):
         model = Team
         exclude = []
 
+
 class GameSerializer(serializers.ModelSerializer):
     location = GameFieldSerializer()
     team = TeamSerializer()
+
     class Meta:
         model = Game
         exclude = []
@@ -43,15 +45,16 @@ class GameSerializer(serializers.ModelSerializer):
 
 class AppMessageSerializer(serializers.ModelSerializer):
     sender = ProfileSerializer()
-    
+
     class Meta:
         model = AppMessage
         exclude = []
 
+
 class AttendanceSerializer(serializers.ModelSerializer):
-    profile=ProfileSerializer()
-    game=GameSerializer()
-    
+    profile = ProfileSerializer()
+    game = GameSerializer()
+
     class Meta:
         model = Attendance
         exclude = []
