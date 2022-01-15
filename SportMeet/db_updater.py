@@ -20,8 +20,8 @@ class ProfileUpdater:
 
     @staticmethod
     def create_new_profile_for_user(user: User, data: dict):
-        if 'email' in data:
-            data['email'] = Profile.encode_and_encrypt_email(data['email'])
+        # if 'email' in data:
+        #     data['email'] = Profile.encode_and_encrypt_email(data['email'])
         profile: Profile = Profile(user=user, **data)
         profile.save()
         return profile

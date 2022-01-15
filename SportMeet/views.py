@@ -95,10 +95,10 @@ class RegisterView(APIView):
                 user, profile_serializer.data)
             try:
                 profile_data = ProfileSerializer(profile).data
-                print(profile_data)
-                print('+++++++++++++++++++++++++++++')
-                profile_data['email'] = Profile.decrypt_and_decode_email(
-                    profile_data['email'])
+                # print(profile_data)
+                # print('+++++++++++++++++++++++++++++')
+                # profile_data['email'] = Profile.decrypt_and_decode_email(
+                #     profile_data['email'])
                 print(profile_data)
             except Exception as e:
                 profile_data = None
@@ -125,7 +125,6 @@ class CreateTeamView(APIView):
 
 class CreateNewGameView(APIView):
     permission_classes = [IsAuthenticated]
-    # breakpoint()
 
     def post(self, request, *args, **kwargs):
         try:
