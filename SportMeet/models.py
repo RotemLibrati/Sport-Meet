@@ -41,7 +41,7 @@ class Team(models.Model):
         'כדורגל', 'כדורגל'), ('כדורסל', 'כדורסל'), ('טניס', 'טניס')])
     anonymous = models.BooleanField(default=False)
     type = models.CharField(max_length=20, choices=[(
-        "פומבית", "פומבית"), ("פרטית", "פרטית")], default="פרטית")
+        "קבוצה פומבית", "קבוצה פומבית"), ("קבוצה פרטית", "קבוצה פרטית")], default="קבוצה פרטית")
 
 
 class Notification(models.Model):

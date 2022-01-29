@@ -113,11 +113,12 @@ class CreateTeamView(APIView):
     def post(self, request, *args, **kwargs):
         name = request.data['name']
         sport = request.data['sport']
+        type = request.data['type']
         admin = request.user.profile
         members = [request.user.profile]
         try:
             team = db_updater.TeamUpdater.create_new_team(
-                admin=admin, members=members, sport=sport, name=name)
+                admin=admin, members=members, sport=sport, name=name, type=type)
             return Response(data={'team': TeamSerializer(team).data}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
