@@ -68,7 +68,11 @@ class TeamUpdater:
         for m in members:
             team.members.add(m)
         return team
-
+    
+    @staticmethod
+    def delete_team_by_id(id):
+        Team.objects.filter(id=id).delete()
+        return
 
 class AppMessageUpdater:
     @staticmethod

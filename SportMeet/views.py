@@ -2,6 +2,7 @@ from copy import error
 from re import sub
 import uuid
 from datetime import datetime, timedelta
+from django.template import TemplateDoesNotExist
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -123,6 +124,16 @@ class CreateTeamView(APIView):
         except Exception as e:
             return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
+class DeleteTeamView(APIView):
+    def post(self, request, *args, **kwargs):
+        id = request.data['id']
+        try:
+            db_updater.TeamUpdater.delete_team_by_id(id)
+            return Response(status=status.HTTP_200_OK)
+        except TemplateDoesNotExist as e:
+            return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+            
+
 
 class CreateNewGameView(APIView):
     permission_classes = [IsAuthenticated]
@@ -168,6 +179,7 @@ class TeamsView(APIView):
         teams = selectors.TeamSelector.three_obj_by_username(username)
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
         return Response(data={'teams': team_serializer.data}, status=status.HTTP_200_OK)
+
 
 
 class AllTeamsView(APIView):
