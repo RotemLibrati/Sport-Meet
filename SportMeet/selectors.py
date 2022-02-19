@@ -115,7 +115,7 @@ class AppMessageSelector:
     @staticmethod
     def get_message_by_team_id(id):
         try:
-            message = AppMessage.objects.filter(team__id=id)
+            message = AppMessage.objects.filter(team__id=id).order_by('timestamp')[::-1]
         except AppMessage.DoesNotExist as e:
             raise e
         return message
