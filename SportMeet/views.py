@@ -1,5 +1,5 @@
 from copy import error
-from re import sub
+from re import A, sub
 import uuid
 from datetime import datetime, timedelta
 from django.template import TemplateDoesNotExist
@@ -47,6 +47,12 @@ class ListProfilesView(APIView):
             return Response(data=profiles_data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+
+# class ProfileDataView(APIView):
+#     def get(self, request, username, *args, **kwargs):
+#         profile = selectors.ProfileSelector.get_details_profile(username)
+#         count = selectors.TeamSelector.get_count_of_team_for_profile(profile)
+#         return Response(data=count, status=status.HTTP_200_OK)
 
 
 class ListUsersView(APIView):
@@ -314,6 +320,13 @@ class AttendanceView(APIView):
             profile, game)
         return Response(data={'attendance': AttendanceSerializer(obj).data}, status=status.HTTP_200_OK)
 
+
+
+class AttendancesStatusView(APIView):
+    def get(self, request, gameId, *args, **kwargs):
+        game = selectors.GameSelector.one_obj_by_id(gameId)
+        attendances = selectors.AttendanceSelector.get_attendances_by_filter_of_gameId(game)
+        return Response(data={'attendance': AttendanceSerializer(attendances, many=True).data}, status=status.HTTP_200_OK)
 
 class PublicGamesView(APIView):
     def get(self, request, *args, **kwargs):

@@ -94,6 +94,12 @@ class TeamSelector:
     def get_public_team():
         team = Team.objects.filter(type="פומבית")
         return team
+    
+    # @staticmethod
+    # def get_count_of_team_for_profile(profile: Profile):
+    #     teams: Team = Team.objects.filter(members__in=profile)
+    #     print(teams)
+        
 
 class GameFieldSelector:
 
@@ -138,4 +144,9 @@ class AttendanceSelector:
             game_obj = GameSelector.one_obj_by_id(game)
             attendance: Attendance = db_updater.AttendanceUpdater.create_attendance(profile, game_obj, None)
         return attendance
+
+    @staticmethod
+    def get_attendances_by_filter_of_gameId(game: Game):
+        attendances = Attendance.objects.filter(game=game, status="מגיע")
+        return attendances
 
