@@ -48,11 +48,11 @@ class ListProfilesView(APIView):
         except Exception as e:
             return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
-# class ProfileDataView(APIView):
-#     def get(self, request, username, *args, **kwargs):
-#         profile = selectors.ProfileSelector.get_details_profile(username)
-#         count = selectors.TeamSelector.get_count_of_team_for_profile(profile)
-#         return Response(data=count, status=status.HTTP_200_OK)
+class ProfileDataView(APIView):
+    def get(self, request, username, *args, **kwargs):
+        profile = selectors.ProfileSelector.get_details_profile(username)
+        count = selectors.TeamSelector.get_count_of_team_for_profile(profile)
+        return Response(data={'teams': count}, status=status.HTTP_200_OK)
 
 
 class ListUsersView(APIView):

@@ -95,10 +95,10 @@ class TeamSelector:
         team = Team.objects.filter(type="פומבית")
         return team
     
-    # @staticmethod
-    # def get_count_of_team_for_profile(profile: Profile):
-    #     teams: Team = Team.objects.filter(members__in=profile)
-    #     print(teams)
+    @staticmethod
+    def get_count_of_team_for_profile(profile: Profile):
+        teams = len(profile.team.all())
+        return teams
         
 
 class GameFieldSelector:
