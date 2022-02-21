@@ -1,4 +1,5 @@
 from datetime import datetime
+from numbers import Integral
 from re import sub
 from SportMeet.models import AppMessage, Attendance, GameField, Profile, Team, Game
 from SportMeet import selectors
@@ -45,8 +46,8 @@ class UserUpdater:
 
 class GameUpdater:
     @staticmethod
-    def create_new_game(team: Team, location: GameField, event_time: datetime):
-        game: Game = Game(team=team, location=location, event_time=event_time)
+    def create_new_game(team: Team, location: GameField, event_time: datetime, limit_participants):
+        game: Game = Game(team=team, location=location, event_time=event_time, limit_participants=limit_participants)
         game.save()
         return game
 
@@ -61,7 +62,7 @@ class GameFieldUpdater:
 
 class TeamUpdater:
     @staticmethod
-    def create_new_team(admin=None, members=[], name=None, sport=None, anonymous=False, type=None):
+    def create_new_team(admin=None, members=[], name=None, sport=None, anonymous=False, type='פומבית'):
         team: Team = Team(admin=admin, name=name,
                           sport=sport, anonymous=anonymous, type=type)
         team.save()

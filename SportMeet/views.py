@@ -159,8 +159,9 @@ class CreateNewGameView(APIView):
         date = request.data["date"].replace(
             ".", "-") + " " + request.data["time"]
         event_time = datetime.strptime(date, '%d-%m-%Y %H:%M')
+        limit_participants = request.data['limitParticipants']
         game = db_updater.GameUpdater.create_new_game(
-            team=team, location=location, event_time=event_time)
+            team=team, location=location, event_time=event_time, limit_participants=limit_participants)
         try:
             return Response(data={'game': GameSerializer(game).data, 'team': TeamSerializer(team).data,
                                   'location': GameFieldSerializer(location).data}, status=status.HTTP_201_CREATED)

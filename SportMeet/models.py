@@ -77,6 +77,7 @@ class Game(models.Model):
     event_time = models.DateTimeField()
     location = models.ForeignKey(
         GameField, null=True, on_delete=models.SET_NULL)
+    limit_participants = models.IntegerField(default=15)
 
 
 class Attendance(models.Model):
