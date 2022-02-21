@@ -24,6 +24,7 @@ urlpatterns = [
     re_path('^all-teams/(?P<username>.+)/$', views.AllTeamsView.as_view()),
     re_path('^attendance/(?P<username>.+)/$', views.AttendanceView.as_view()),
     re_path('^attendance-for-game/(?P<gameId>.+)/$', views.AttendancesStatusView.as_view()),
+    re_path('^delete-message/(?P<messageId>.+)/$', views.AppMessageView.as_view()),
     re_path('^team-messages/(?P<id>.+)/$', views.AppMessageView.as_view()),
     re_path('^message/(?P<id>.+)/$', views.AppMessageView.as_view()),
     re_path('^new-message/(?P<teamID>.+)/$', views.AppMessageView.as_view()),

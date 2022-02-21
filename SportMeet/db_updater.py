@@ -86,6 +86,14 @@ class AppMessageUpdater:
             sender=sender, subject=subject, body=body, timestamp=timestamp, team=team)
         message.save()
         return message
+    
+    @staticmethod
+    def delete_message_by_id(messageId):
+        try:
+            AppMessage.objects.get(id=messageId).delete()
+            return True
+        except AppMessage.DoesNotExist:
+            return False
 
 
 class AttendanceUpdater:

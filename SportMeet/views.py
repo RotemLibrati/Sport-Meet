@@ -268,6 +268,15 @@ class AppMessageView(APIView):
         except Exception as e:
             return Response(data={'error': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, messageId, *args, **kwargs):
+        message = db_updater.AppMessageUpdater.delete_message_by_id(messageId)
+        if message:
+            return Response(data={'message': 'The message was deleted'}, status=status.HTTP_200_OK)
+        else: 
+            return Response(data={'message': "The messgae does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
 
 class ImportData(APIView):
     def get(self, request, *args, **kwargs):
