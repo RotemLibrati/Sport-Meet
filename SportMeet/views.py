@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from SportMeet.models import AppMessage, Attendance, Game, GameField, Profile, Team
-from SportMeet.serializers import AppMessageSerializer, AttendanceSerializer, GameSerializer, ProfileSerializer, TeamSerializer, UserSerializer, GameFieldSerializer
+from SportMeet.serializers import AppMessageSerializer, AttendanceSerializer, GameSerializer, NotificationSerializer, ProfileSerializer, TeamSerializer, UserSerializer, GameFieldSerializer
 from SportMeet import db_updater, selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import csv
@@ -162,6 +162,8 @@ class CreateNewGameView(APIView):
         limit_participants = request.data['limitParticipants']
         game = db_updater.GameUpdater.create_new_game(
             team=team, location=location, event_time=event_time, limit_participants=limit_participants)
+        if request.data["team"]:
+            selectors.NotificationSelector.send_notification_to_members_team_when_open_game(team)
         try:
             return Response(data={'game': GameSerializer(game).data, 'team': TeamSerializer(team).data,
                                   'location': GameFieldSerializer(location).data}, status=status.HTTP_201_CREATED)
@@ -344,3 +346,12 @@ class PublicGamesView(APIView):
         serializer = GameSerializer(games, many=True)
         games_serializer = serializer.data
         return Response(data={'games': games_serializer}, status=status.HTTP_200_OK)
+
+class NotificationView(APIView):
+    def get(self, request, username, *args, **kwargs):
+        try:
+            profile = selectors.ProfileSelector.get_details_profile(username)
+        except Profile.DoesNotExist as e:
+            return Response(data={"message": "Username is not exist"}, status=status.HTTP_400_BAD_REQUEST)
+        notification = selectors.NotificationSelector.get_notification_by_profile(profile)
+        return Response(data={"notification" : NotificationSerializer(notification, many=True).data}, status=status.HTTP_200_OK)

@@ -1,5 +1,5 @@
 from datetime import time
-from SportMeet.models import AppMessage, Attendance, GameField, Profile, Team, Game
+from SportMeet.models import AppMessage, Attendance, GameField, Notification, Profile, Team, Game
 from django.contrib.auth.models import User
 from SportMeet import db_updater
 #from datetime import datetime
@@ -150,3 +150,14 @@ class AttendanceSelector:
         attendances = Attendance.objects.filter(game=game, status="מגיע")
         return attendances
 
+class NotificationSelector:
+
+    @staticmethod
+    def send_notification_to_members_team_when_open_game(team: Team):
+        for profile in team.members.all():
+            db_updater.NotificationUpdater.create_new_notification(
+                profile=profile, message="נפתח משחק עבורך בקבוצה {}".format(team.name))
+    
+    def get_notification_by_profile(profile: Profile):
+        notification = Notification.objects.filter(profile=profile)
+        return notification

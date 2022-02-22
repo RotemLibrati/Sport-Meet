@@ -1,9 +1,10 @@
 from datetime import datetime
 from numbers import Integral
 from re import sub
-from SportMeet.models import AppMessage, Attendance, GameField, Profile, Team, Game
+from SportMeet.models import AppMessage, Attendance, GameField, Notification, Profile, Team, Game
 from SportMeet import selectors
 from django.contrib.auth.models import User
+from django.utils import timezone
 from cryptography.fernet import Fernet
 import os
 
@@ -108,3 +109,11 @@ class AttendanceUpdater:
     def change_attendance(attendance: Attendance):
         attendance.save()
         return attendance
+
+class NotificationUpdater:
+    @staticmethod
+    def create_new_notification(profile: Profile, message: str):
+        notification: Notification = Notification(
+            profile=profile, message=message, is_seen=False, timestamp=timezone.now())
+        notification.save()
+        return notification
