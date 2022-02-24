@@ -56,6 +56,15 @@ class GameSelector:
         return games
 
     @staticmethod
+    def all_upcoming_games(username: str):
+        user = User.objects.get(username=username)
+        teams = user.profile.team.all()
+        _now = timezone.now()
+        games = Game.objects.filter(
+            team__in=teams, event_time__gte=_now, notification=True).order_by('event_time')
+        return games
+
+    @staticmethod
     def one_obj_by_id(id: str):
         return Game.objects.get(id=id)
 
@@ -67,6 +76,10 @@ class GameSelector:
         tomorrow = _now + delta_24_hours
         games = Game.objects.filter(team__in=team, event_time__gte=_now, event_time__lte=tomorrow).order_by('event_time')
         return games
+
+    # @staticmethod
+    # def get_upcoming_games_24_hours(profile: Profile):
+
 
 
 
@@ -159,6 +172,11 @@ class NotificationSelector:
         for profile in team.members.all():
             db_updater.NotificationUpdater.create_new_notification(
                 profile=profile, message="נפתח משחק עבורך בקבוצה {}".format(team.name))
+
+    @staticmethod
+    def send_notification_to_profile_when_game_in_range_24_hours(profile: Profile, game: Game):
+        db_updater.NotificationUpdater.create_new_notification(
+            profile=profile, message="יש לך משחק ב{} {} במיקום: {}".format(game.event_time.date(), game.event_time.time() , game.location.name))
     
     def get_notification_by_profile(profile: Profile):
         notification = Notification.objects.filter(profile=profile).order_by('timestamp')[::-1]

@@ -1,7 +1,9 @@
 from copy import error
+import profile
 from re import A, sub
 import uuid
 from datetime import datetime, timedelta
+from django.utils import timezone
 from django.template import TemplateDoesNotExist
 from rest_framework import permissions
 from rest_framework.views import APIView
@@ -178,6 +180,16 @@ class RecentGamesView(APIView):
         games = selectors.GameSelector.three_obj_in_the_future_by_username(
             username)
         game_serializer: GameSerializer = GameSerializer(games, many=True)
+        upcoming_games = selectors.GameSelector.all_upcoming_games(username)
+        _now = timezone.now()
+        delta_24_hours = timedelta(hours=24)
+        tomorrow = _now + delta_24_hours
+        profile = selectors.ProfileSelector.get_details_profile(username)
+        for game in upcoming_games:
+            if game.event_time > _now and game.event_time < tomorrow:
+                selectors.NotificationSelector.send_notification_to_profile_when_game_in_range_24_hours(profile, game)
+                game.notification = False
+                db_updater.GameUpdater.update_notification_field(game)
         return Response(data={'games': game_serializer.data}, status=status.HTTP_200_OK)
 
 

@@ -78,6 +78,7 @@ class Game(models.Model):
     location = models.ForeignKey(
         GameField, null=True, on_delete=models.SET_NULL)
     limit_participants = models.IntegerField(default=15)
+    notification = models.BooleanField(default=True)
 
 
 class Attendance(models.Model):

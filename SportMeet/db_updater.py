@@ -1,6 +1,7 @@
 from datetime import datetime
 from numbers import Integral
 from re import sub
+from telnetlib import GA
 from SportMeet.models import AppMessage, Attendance, GameField, Notification, Profile, Team, Game
 from SportMeet import selectors
 from django.contrib.auth.models import User
@@ -49,6 +50,10 @@ class GameUpdater:
     @staticmethod
     def create_new_game(team: Team, location: GameField, event_time: datetime, limit_participants):
         game: Game = Game(team=team, location=location, event_time=event_time, limit_participants=limit_participants)
+        game.save()
+        return game
+    
+    def update_notification_field(game: Game):
         game.save()
         return game
 
@@ -122,5 +127,7 @@ class NotificationUpdater:
     def update_is_seen_field_to_true(notification: Notification):
         notification.save()
         return notification
+
+
 
     
