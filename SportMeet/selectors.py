@@ -159,5 +159,9 @@ class NotificationSelector:
                 profile=profile, message="נפתח משחק עבורך בקבוצה {}".format(team.name))
     
     def get_notification_by_profile(profile: Profile):
-        notification = Notification.objects.filter(profile=profile)
+        notification = Notification.objects.filter(profile=profile).order_by('timestamp')[::-1]
         return notification
+
+    def get_notifications_by_profile_and_is_seen(profile: Profile):
+        notifications = Notification.objects.filter(profile=profile, is_seen=False)
+        return notifications

@@ -352,6 +352,17 @@ class NotificationView(APIView):
         try:
             profile = selectors.ProfileSelector.get_details_profile(username)
         except Profile.DoesNotExist as e:
-            return Response(data={"message": "Username is not exist"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"message": "Username does not exist"}, status=status.HTTP_400_BAD_REQUEST)
         notification = selectors.NotificationSelector.get_notification_by_profile(profile)
         return Response(data={"notification" : NotificationSerializer(notification, many=True).data}, status=status.HTTP_200_OK)
+
+    def put(self, request, username, *args, **kwargs):
+        try:
+            profile = selectors.ProfileSelector.get_details_profile(username)
+        except Profile.DoesNotExist as e:
+            return Response(data={"message": "Username does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+        notifications = selectors.NotificationSelector.get_notifications_by_profile_and_is_seen(profile)
+        for notification in notifications:
+            notification.is_seen = True
+            db_updater.NotificationUpdater.update_is_seen_field_to_true(notification)
+        return Response(data={"message": "All notification is changed"}, status=status.HTTP_200_OK)

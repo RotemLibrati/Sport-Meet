@@ -117,3 +117,10 @@ class NotificationUpdater:
             profile=profile, message=message, is_seen=False, timestamp=timezone.now())
         notification.save()
         return notification
+    
+    @staticmethod
+    def update_is_seen_field_to_true(notification: Notification):
+        notification.save()
+        return notification
+
+    
