@@ -2,7 +2,7 @@ from datetime import time
 from SportMeet.models import AppMessage, Attendance, GameField, Notification, Profile, Team, Game
 from django.contrib.auth.models import User
 from SportMeet import db_updater
-#from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 
 
@@ -62,8 +62,10 @@ class GameSelector:
     @staticmethod
     def get_games_of_team():
         team = Team.objects.filter(type="פומבית")
-        _now = timezone.now()
-        games = Game.objects.filter(team__in=team, event_time__gte=_now).order_by('event_time')
+        _now = datetime.now()
+        delta_24_hours = timedelta(hours=24)
+        tomorrow = _now + delta_24_hours
+        games = Game.objects.filter(team__in=team, event_time__gte=_now, event_time__lte=tomorrow).order_by('event_time')
         return games
 
 
