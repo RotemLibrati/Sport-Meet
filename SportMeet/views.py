@@ -1,5 +1,6 @@
 from copy import error
-import profile
+import imp
+from django.http import HttpResponse
 from re import A, sub
 import uuid
 from datetime import datetime, timedelta
@@ -378,3 +379,8 @@ class NotificationView(APIView):
             notification.is_seen = True
             db_updater.NotificationUpdater.update_is_seen_field_to_true(notification)
         return Response(data={"message": "All notification is changed"}, status=status.HTTP_200_OK)
+
+
+class TestView(APIView):
+    def get(self, request, *args, **kwargs):
+        return HttpResponse("<html><body>Rotem</body></html>")
