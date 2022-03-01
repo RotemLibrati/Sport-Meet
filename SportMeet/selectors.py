@@ -111,9 +111,15 @@ class TeamSelector:
         return team
     
     @staticmethod
-    def get_count_of_team_for_profile(profile: Profile):
-        teams = len(profile.team.all())
-        return teams
+    def get_count_of_unanonymous_team_for_profile(profile: Profile):
+        teams = profile.team.all()
+        count = 0
+        
+        for team in teams:
+            if team.anonymous != True:
+                count+=1
+        # unanonymous_team
+        return count
         
 
 class GameFieldSelector:

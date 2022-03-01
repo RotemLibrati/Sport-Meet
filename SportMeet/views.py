@@ -53,7 +53,7 @@ class ListProfilesView(APIView):
 class ProfileDataView(APIView):
     def get(self, request, username, *args, **kwargs):
         profile = selectors.ProfileSelector.get_details_profile(username)
-        count = selectors.TeamSelector.get_count_of_team_for_profile(profile)
+        count = selectors.TeamSelector.get_count_of_unanonymous_team_for_profile(profile)
         return Response(data={'teams': count}, status=status.HTTP_200_OK)
 
 
@@ -378,3 +378,12 @@ class NotificationView(APIView):
             notification.is_seen = True
             db_updater.NotificationUpdater.update_is_seen_field_to_true(notification)
         return Response(data={"message": "All notification is changed"}, status=status.HTTP_200_OK)
+
+class NotificationAmountView(APIView):
+    def get(self, request, username, *args, **kwargs):
+        try:
+            profile = selectors.ProfileSelector.get_details_profile(username)
+        except Profile.DoesNotExist as e:
+            return Response(data={"message": "Username does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+        notification = selectors.NotificationSelector.get_notifications_by_profile_and_is_seen(profile)
+        return Response(data={"Amount of unseen notifications": len(notification)}, status=status.HTTP_200_OK)
