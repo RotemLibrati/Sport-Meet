@@ -81,6 +81,12 @@ class TeamUpdater:
         Team.objects.filter(id=id).delete()
         return
 
+    @staticmethod
+    def update_details_team(team: Team):
+        team.save()
+        return team
+
+
 class AppMessageUpdater:
     @staticmethod
     def change_seen_for_messgae(message: AppMessage):

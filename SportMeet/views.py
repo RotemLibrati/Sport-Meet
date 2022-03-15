@@ -132,7 +132,7 @@ class CreateTeamView(APIView):
         except Exception as e:
             return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
-class DeleteTeamView(APIView):
+class DeleteOrEditTeamView(APIView):
     def post(self, request, *args, **kwargs):
         id = request.data['id']
         try:
@@ -140,6 +140,17 @@ class DeleteTeamView(APIView):
             return Response(status=status.HTTP_200_OK)
         except TemplateDoesNotExist as e:
             return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, id, *args, **kwargs):
+        team = selectors.TeamSelector.get_obj_by_id(id)
+        team.name = request.data['name']
+        team.sport = request.data['sport']
+        team.type = request.data['type']
+        team.anonymous = request.data['anonymous']
+        team_updated = db_updater.TeamUpdater.update_details_team(team)
+        return Response(data={"team": TeamSerializer(team_updated).data}, status=status.HTTP_200_OK)
+
+
             
 
 
