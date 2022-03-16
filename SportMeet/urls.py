@@ -15,6 +15,7 @@ urlpatterns = [
     path('import-data', views.ImportData.as_view()),
     path('public-games', views.PublicGamesView.as_view()),
     path('delete-team', views.DeleteOrEditTeamView.as_view()),
+    re_path('^city/(?P<city>.+)/$', views.importCityView.as_view()),
     re_path('^delete-team/(?P<id>.+)/$', views.DeleteOrEditTeamView.as_view()),
     re_path('^recent-games/(?P<username>.+)/$', views.RecentGamesView.as_view()),
     re_path('^notification/(?P<username>.+)/$', views.NotificationView.as_view()),

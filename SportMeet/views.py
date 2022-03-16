@@ -146,7 +146,6 @@ class DeleteOrEditTeamView(APIView):
         team.name = request.data['name']
         team.sport = request.data['sport']
         team.type = request.data['type']
-        team.anonymous = request.data['anonymous']
         team_updated = db_updater.TeamUpdater.update_details_team(team)
         return Response(data={"team": TeamSerializer(team_updated).data}, status=status.HTTP_200_OK)
 
@@ -326,6 +325,10 @@ class ImportData(APIView):
                                                                   is_for_basketball=is_for_basketball, is_for_tennis=is_for_tennis, telephone=row[13])
 
     # add response to get function
+class importCityView(APIView):
+    def get(self, request, city, *args, **kwargs):
+        game_filed_list = selectors.DataSelector.get_all_game_field_by_city_name(city)
+        return Response(data=GameFieldSerializer(game_filed_list, many=True).data, status=status.HTTP_200_OK)
 
 
 class AttendanceView(APIView):
