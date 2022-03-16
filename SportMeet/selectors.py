@@ -185,7 +185,10 @@ class NotificationSelector:
             profile=profile, message="יש לך משחק ב{} {} במיקום: {}".format(game.event_time.date(), game.event_time.time() , game.location.name))
     
     def get_notification_by_profile(profile: Profile):
-        notification = Notification.objects.filter(profile=profile).order_by('timestamp')[::-1]
+        _now = datetime.now()
+        delta_96_hours = timedelta(hours=-96)
+        new_date = _now + delta_96_hours
+        notification = Notification.objects.filter(profile=profile, timestamp__gte=new_date).order_by('timestamp')[::-1]
         return notification
 
     def get_notifications_by_profile_and_is_seen(profile: Profile):
