@@ -191,3 +191,10 @@ class NotificationSelector:
     def get_notifications_by_profile_and_is_seen(profile: Profile):
         notifications = Notification.objects.filter(profile=profile, is_seen=False)
         return notifications
+
+class DataSelector:
+
+    @staticmethod
+    def get_all_game_field_by_city_name(city_name: str):
+        city = GameField.objects.filter(region=city_name)
+        return city
