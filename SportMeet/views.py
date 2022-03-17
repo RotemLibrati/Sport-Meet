@@ -36,10 +36,12 @@ class ListProfilesView(APIView):
         email = request.data['email']
         city = request.data['city']
         age = request.data['age']
+        sex = request.data['sex']
         profile = selectors.ProfileSelector.get_details_profile(username)
         profile.email = email
         profile.city = city
         profile.age = age
+        profile.sex = sex
         update_profile = db_updater.ProfileUpdater.update_deailts_profile(
             profile)
         serializer = ProfileSerializer(update_profile)
