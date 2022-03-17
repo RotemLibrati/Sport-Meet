@@ -1,5 +1,4 @@
 from copy import error
-import profile
 from re import A, sub
 import uuid
 from datetime import datetime, timedelta
@@ -168,9 +167,13 @@ class CreateNewGameView(APIView):
                 request.data["location"])
         except:
             location = None
-        date = request.data["date"].replace(
-            ".", "-") + " " + request.data["time"]
-        event_time = datetime.strptime(date, '%d-%m-%Y %H:%M')
+        try:
+            date = request.data["date"].replace(
+                ".", "-") + " " + request.data["time"]
+            event_time = datetime.strptime(date, '%d-%m-%Y %H:%M')
+        except ValueError as e:
+            date = datetime.strptime(request.data['date'], '%a %b %d %H:%M:%S %Y').strftime('%d-%m-%Y %H:%M')
+            event_time = datetime.strptime(date, '%d-%m-%Y %H:%M')
         limit_participants = request.data['limitParticipants']
         game = db_updater.GameUpdater.create_new_game(
             team=team, location=location, event_time=event_time, limit_participants=limit_participants)
