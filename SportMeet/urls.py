@@ -25,6 +25,7 @@ urlpatterns = [
     re_path('^get-attendance/(?P<username>.+)/(?P<game>.+)/$', views.AttendanceView.as_view()),
     re_path('^games/(?P<username>.+)/$', views.ListGamesView.as_view()),
     re_path('^game/(?P<id>.+)/$', views.DetailGameView.as_view()),
+    re_path('^update-game/(?P<id>.+)/$', views.DetailGameView.as_view()),
     re_path('^teams/(?P<username>.+)/$', views.TeamsView.as_view()),
     re_path('^all-teams/(?P<username>.+)/$', views.AllTeamsView.as_view()),
     re_path('^attendance/(?P<username>.+)/$', views.AttendanceView.as_view()),

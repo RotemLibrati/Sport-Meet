@@ -247,6 +247,18 @@ class DetailGameView(APIView):
             return Response(data={'game': game_serializer.data}, status=status.HTTP_200_OK)
         except Game.DoesNotExist as e:
             return Response(data={"error": "error, user does not exist"}, status=status.HTTP_404_NOT_FOUND)
+    
+    def put(self, request, id, *args, **kwargs):
+        try:
+            game = selectors.GameSelector.one_obj_by_id(id)
+            game.limit_participants = request.data['limitParticipants']
+            game.location = selectors.GameFieldSelector.get_game_field_by_id(request.data['location'])
+
+            game = db_updater.GameUpdater.update_game_details(game)
+            game_serializer: GameSerializer = GameSerializer(game)
+            return Response(data={'game': game_serializer.data}, status=status.HTTP_200_OK)
+        except Game.DoesNotExist as e:
+            return Response(data={"error": "error, user does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class GameFieldView(APIView):

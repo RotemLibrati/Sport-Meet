@@ -57,6 +57,11 @@ class GameUpdater:
         game.save()
         return game
 
+    @staticmethod
+    def update_game_details(game: Game):
+        game.save()
+        return game
+
 
 class GameFieldUpdater:
     @staticmethod
