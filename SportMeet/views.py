@@ -51,10 +51,12 @@ class ListProfilesView(APIView):
         except Exception as e:
             return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ProfileDataView(APIView):
     def get(self, request, username, *args, **kwargs):
         profile = selectors.ProfileSelector.get_details_profile(username)
-        count = selectors.TeamSelector.get_count_of_unanonymous_team_for_profile(profile)
+        count = selectors.TeamSelector.get_count_of_unanonymous_team_for_profile(
+            profile)
         return Response(data={'teams': count}, status=status.HTTP_200_OK)
 
 
@@ -133,6 +135,7 @@ class CreateTeamView(APIView):
         except Exception as e:
             return Response(data={'errors': f'{repr(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class DeleteOrEditTeamView(APIView):
     def post(self, request, *args, **kwargs):
         id = request.data['id']
@@ -151,9 +154,6 @@ class DeleteOrEditTeamView(APIView):
         return Response(data={"team": TeamSerializer(team_updated).data}, status=status.HTTP_200_OK)
 
 
-            
-
-
 class CreateNewGameView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -163,7 +163,7 @@ class CreateNewGameView(APIView):
         except:
             team = db_updater.TeamUpdater.create_new_team(sport=request.data["type"],
                                                           name=uuid.uuid1(), admin=request.user.profile,
-                                                          anonymous=True, members=[request.user.profile])
+                                                          anonymous=True, members=[request.user.profile], type=request.data["typeTeam"])
         try:
             location = selectors.GameFieldSelector.get_game_field_by_id(
                 request.data["location"])
@@ -174,13 +174,15 @@ class CreateNewGameView(APIView):
                 ".", "-") + " " + request.data["time"]
             event_time = datetime.strptime(date, '%d-%m-%Y %H:%M')
         except ValueError as e:
-            date = datetime.strptime(request.data['date'], '%a %b %d %H:%M:%S %Y').strftime('%d-%m-%Y %H:%M')
+            date = datetime.strptime(
+                request.data['date'], '%a %b %d %H:%M:%S %Y').strftime('%d-%m-%Y %H:%M')
             event_time = datetime.strptime(date, '%d-%m-%Y %H:%M')
         limit_participants = request.data['limitParticipants']
         game = db_updater.GameUpdater.create_new_game(
             team=team, location=location, event_time=event_time, limit_participants=limit_participants)
         if request.data["team"]:
-            selectors.NotificationSelector.send_notification_to_members_team_when_open_game(team)
+            selectors.NotificationSelector.send_notification_to_members_team_when_open_game(
+                team)
         try:
             return Response(data={'game': GameSerializer(game).data, 'team': TeamSerializer(team).data,
                                   'location': GameFieldSerializer(location).data}, status=status.HTTP_201_CREATED)
@@ -202,7 +204,8 @@ class RecentGamesView(APIView):
         profile = selectors.ProfileSelector.get_details_profile(username)
         for game in upcoming_games:
             if game.event_time > _now and game.event_time < tomorrow:
-                selectors.NotificationSelector.send_notification_to_profile_when_game_in_range_24_hours(profile, game)
+                selectors.NotificationSelector.send_notification_to_profile_when_game_in_range_24_hours(
+                    profile, game)
                 game.notification = False
                 db_updater.GameUpdater.update_notification_field(game)
         return Response(data={'games': game_serializer.data}, status=status.HTTP_200_OK)
@@ -215,7 +218,6 @@ class TeamsView(APIView):
         teams = selectors.TeamSelector.three_obj_by_username(username)
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
         return Response(data={'teams': team_serializer.data}, status=status.HTTP_200_OK)
-
 
 
 class AllTeamsView(APIView):
@@ -247,12 +249,13 @@ class DetailGameView(APIView):
             return Response(data={'game': game_serializer.data}, status=status.HTTP_200_OK)
         except Game.DoesNotExist as e:
             return Response(data={"error": "error, user does not exist"}, status=status.HTTP_404_NOT_FOUND)
-    
+
     def put(self, request, id, *args, **kwargs):
         try:
             game = selectors.GameSelector.one_obj_by_id(id)
             game.limit_participants = request.data['limitParticipants']
-            game.location = selectors.GameFieldSelector.get_game_field_by_id(request.data['location'])
+            game.location = selectors.GameFieldSelector.get_game_field_by_id(
+                request.data['location'])
 
             game = db_updater.GameUpdater.update_game_details(game)
             game_serializer: GameSerializer = GameSerializer(game)
@@ -314,10 +317,8 @@ class AppMessageView(APIView):
         message = db_updater.AppMessageUpdater.delete_message_by_id(messageId)
         if message:
             return Response(data={'message': 'The message was deleted'}, status=status.HTTP_200_OK)
-        else: 
+        else:
             return Response(data={'message': "The messgae does not exist"}, status=status.HTTP_400_BAD_REQUEST)
-        
-
 
 
 class ImportData(APIView):
@@ -329,22 +330,28 @@ class ImportData(APIView):
             is_for_football = False
             is_for_basketball = False
             is_for_tennis = False
-            if not 'לא' in row[21]:
+            payment = False
+            if not 'לא' in row[21] and not 'בריכ' in row[3] and not 'כושר' in row[3] and not 'לא תקני' in row[3] and not 'ליג' in row[23] and not 'מסלול' in row[3] and not 'אקסטרים' in row[3] and not 'חול' in row[3] and not 'שייט' in row[3]:
                 if 'כדורגל' in row[3] or 'מיני' in row[3] or 'שחבק' in row[3] or 'משולב' in row[3]:
                     is_for_football = True
                 if 'כדורסל' in row[3] or 'משולב' in row[3]:
                     is_for_basketball = True
                 if 'טניס' in row[3]:
                     is_for_tennis = True
+                if 'תיאום' in row[16] or 'תשלום' in row[16]:
+                    payment = True
                 db_updater.GameFieldUpdater.create_new_field_game(name=row[4],
                                                                   street=row[6], region=row[0], address_number=row[
                                                                       7], availability=row[16], is_for_football=is_for_football,
-                                                                  is_for_basketball=is_for_basketball, is_for_tennis=is_for_tennis, telephone=row[13])
-
+                                                                  is_for_basketball=is_for_basketball, is_for_tennis=is_for_tennis, telephone=row[13], payment=payment)
+        return Response(data={"Message": "Done"}, status=status.HTTP_201_CREATED)
     # add response to get function
+
+
 class importCityView(APIView):
     def get(self, request, city, *args, **kwargs):
-        game_filed_list = selectors.DataSelector.get_all_game_field_by_city_name(city)
+        game_filed_list = selectors.DataSelector.get_all_game_field_by_city_name(
+            city)
         return Response(data=GameFieldSerializer(game_filed_list, many=True).data, status=status.HTTP_200_OK)
 
 
@@ -376,12 +383,13 @@ class AttendanceView(APIView):
         return Response(data={'attendance': AttendanceSerializer(obj).data}, status=status.HTTP_200_OK)
 
 
-
 class AttendancesStatusView(APIView):
     def get(self, request, gameId, *args, **kwargs):
         game = selectors.GameSelector.one_obj_by_id(gameId)
-        attendances = selectors.AttendanceSelector.get_attendances_by_filter_of_gameId(game)
+        attendances = selectors.AttendanceSelector.get_attendances_by_filter_of_gameId(
+            game)
         return Response(data={'attendance': AttendanceSerializer(attendances, many=True).data}, status=status.HTTP_200_OK)
+
 
 class PublicGamesView(APIView):
     def get(self, request, *args, **kwargs):
@@ -390,25 +398,30 @@ class PublicGamesView(APIView):
         games_serializer = serializer.data
         return Response(data={'games': games_serializer}, status=status.HTTP_200_OK)
 
+
 class NotificationView(APIView):
     def get(self, request, username, *args, **kwargs):
         try:
             profile = selectors.ProfileSelector.get_details_profile(username)
         except Profile.DoesNotExist as e:
             return Response(data={"message": "Username does not exist"}, status=status.HTTP_400_BAD_REQUEST)
-        notification = selectors.NotificationSelector.get_notification_by_profile(profile)
-        return Response(data={"notification" : NotificationSerializer(notification, many=True).data}, status=status.HTTP_200_OK)
+        notification = selectors.NotificationSelector.get_notification_by_profile(
+            profile)
+        return Response(data={"notification": NotificationSerializer(notification, many=True).data}, status=status.HTTP_200_OK)
 
     def put(self, request, username, *args, **kwargs):
         try:
             profile = selectors.ProfileSelector.get_details_profile(username)
         except Profile.DoesNotExist as e:
             return Response(data={"message": "Username does not exist"}, status=status.HTTP_400_BAD_REQUEST)
-        notifications = selectors.NotificationSelector.get_notifications_by_profile_and_is_seen(profile)
+        notifications = selectors.NotificationSelector.get_notifications_by_profile_and_is_seen(
+            profile)
         for notification in notifications:
             notification.is_seen = True
-            db_updater.NotificationUpdater.update_is_seen_field_to_true(notification)
+            db_updater.NotificationUpdater.update_is_seen_field_to_true(
+                notification)
         return Response(data={"message": "All notification is changed"}, status=status.HTTP_200_OK)
+
 
 class NotificationAmountView(APIView):
     def get(self, request, username, *args, **kwargs):
@@ -416,5 +429,6 @@ class NotificationAmountView(APIView):
             profile = selectors.ProfileSelector.get_details_profile(username)
         except Profile.DoesNotExist as e:
             return Response(data={"message": "Username does not exist"}, status=status.HTTP_400_BAD_REQUEST)
-        notification = selectors.NotificationSelector.get_notifications_by_profile_and_is_seen(profile)
+        notification = selectors.NotificationSelector.get_notifications_by_profile_and_is_seen(
+            profile)
         return Response(data={"Amount of unseen notifications": len(notification)}, status=status.HTTP_200_OK)

@@ -16,6 +16,7 @@ class Profile(models.Model):
     sex = models.CharField(max_length=10, choices=[
                            ('זכר', 'זכר'), ('נקבה', 'נקבה')])
     age = models.IntegerField(default=0)
+    phone_number = models.CharField(max_length=10, blank=True, null=True)
 
     # @staticmethod
     # def decrypt_and_decode_email(email: str):
@@ -70,6 +71,7 @@ class GameField(models.Model):
     is_for_tennis = BooleanField(default=False)
     telephone = models.CharField(max_length=20)
     availability = models.CharField(max_length=50)
+    payment = models.BooleanField(default=False)
 
 
 class Game(models.Model):
