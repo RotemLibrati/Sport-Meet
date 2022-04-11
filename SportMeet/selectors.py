@@ -201,3 +201,13 @@ class DataSelector:
     def get_all_game_field_by_city_name(city_name: str):
         city = GameField.objects.filter(region=city_name)
         return city
+    
+    @staticmethod
+    def get_all_game_field_by_city_name_and_type_sport(city_name: str, typeSport: str):
+        if typeSport == 'כדורגל':
+            city = GameField.objects.filter(region=city_name, is_for_football=True)
+        elif typeSport == 'כדורסל':
+            city = GameField.objects.filter(region=city_name, is_for_basketball=True)
+        elif typeSport == 'טניס':
+            city = GameField.objects.filter(region=city_name, is_for_tennis=True)
+        return city

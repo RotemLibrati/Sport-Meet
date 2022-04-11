@@ -219,6 +219,13 @@ class TeamsView(APIView):
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
         return Response(data={'teams': team_serializer.data}, status=status.HTTP_200_OK)
 
+class TeamView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, id, *args, **kwargs):
+        team = selectors.TeamSelector.get_obj_by_id(id)
+        team_serializer: TeamSerializer = TeamSerializer(team)
+        return Response(data={'team': team_serializer.data}, status=status.HTTP_200_OK)
+
 
 class AllTeamsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -352,6 +359,12 @@ class importCityView(APIView):
     def get(self, request, city, *args, **kwargs):
         game_filed_list = selectors.DataSelector.get_all_game_field_by_city_name(
             city)
+        return Response(data=GameFieldSerializer(game_filed_list, many=True).data, status=status.HTTP_200_OK)
+
+class importGameFiledByCityView(APIView):
+    def get(self, request, city, typeSport, *args, **kwargs):
+        game_filed_list = selectors.DataSelector.get_all_game_field_by_city_name_and_type_sport(
+            city, typeSport)
         return Response(data=GameFieldSerializer(game_filed_list, many=True).data, status=status.HTTP_200_OK)
 
 
