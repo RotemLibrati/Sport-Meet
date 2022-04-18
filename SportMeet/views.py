@@ -338,7 +338,7 @@ class ImportData(APIView):
             is_for_basketball = False
             is_for_tennis = False
             payment = False
-            if not 'לא' in row[21] and not 'בריכ' in row[3] and not 'כושר' in row[3] and not 'לא תקני' in row[3] and not 'ליג' in row[23] and not 'מסלול' in row[3] and not 'אקסטרים' in row[3] and not 'חול' in row[3] and not 'שייט' in row[3] and not 'מוטורי' in row[3]:
+            if not 'לא תקני' in row[3] and not 'ביה"ס' in row[4] and not 'בית ספר' in row[4] and not 'בי"ס' in row[4] and not 'לא' in row[21] and not 'בריכ' in row[3] and not 'כושר' in row[3] and not 'לא תקני' in row[3] and not 'ליג' in row[23] and not 'מסלול' in row[3] and not 'אקסטרים' in row[3] and not 'חול' in row[3] and not 'שייט' in row[3] and not 'מוטורי' in row[3]:
                 if 'כדורגל' in row[3] or 'מיני' in row[3] or 'שחבק' in row[3] or 'משולב' in row[3]:
                     is_for_football = True
                 if 'כדורסל' in row[3] or 'משולב' in row[3]:
