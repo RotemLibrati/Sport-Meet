@@ -62,6 +62,13 @@ class GameUpdater:
         game.save()
         return game
 
+    def delete_game_by_id(gameId):
+        try:
+            Game.objects.get(id=gameId).delete()
+            return True
+        except Game.DoesNotExist:
+            return False
+
 
 class GameFieldUpdater:
     @staticmethod

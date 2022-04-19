@@ -287,6 +287,12 @@ class DetailGameView(APIView):
         except Game.DoesNotExist as e:
             return Response(data={"error": "error, user does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
+    def delete(self, request, id, *args, **kwargs):
+        game = db_updater.GameUpdater.delete_game_by_id(id)
+        if game:
+            return Response(data={'message': 'The game was deleted'}, status=status.HTTP_200_OK)
+        else:
+            return Response(data={'message': "The game does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
 class GameFieldView(APIView):
     permission_classes = [IsAuthenticated]
