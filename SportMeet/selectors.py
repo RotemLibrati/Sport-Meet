@@ -195,8 +195,12 @@ class NotificationSelector:
     @staticmethod
     def send_notification_to_members_team_when_open_game(team: Team):
         for profile in team.members.all():
-            db_updater.NotificationUpdater.create_new_notification(
-                profile=profile, message="נפתח משחק עבורך בקבוצה {}".format(team.name))
+            if team.anonymous:
+                db_updater.NotificationUpdater.create_new_notification(
+                    profile=profile, message="נפתח משחק עבורך בקבוצה")
+            else:
+                db_updater.NotificationUpdater.create_new_notification(
+                    profile=profile, message="נפתח משחק עבורך בקבוצה {}".format(team.name))
 
     @staticmethod
     def send_notification_to_profile_when_game_in_range_24_hours(profile: Profile, game: Game):
