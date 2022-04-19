@@ -219,12 +219,25 @@ class TeamsView(APIView):
         team_serializer: TeamSerializer = TeamSerializer(teams, many=True)
         return Response(data={'teams': team_serializer.data}, status=status.HTTP_200_OK)
 
+
+        
 class TeamView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, id, *args, **kwargs):
         team = selectors.TeamSelector.get_obj_by_id(id)
         team_serializer: TeamSerializer = TeamSerializer(team)
         return Response(data={'team': team_serializer.data}, status=status.HTTP_200_OK)
+    
+    def put(self, request, id, *args, **kwargs):
+        team = selectors.TeamSelector.get_obj_by_id(id)
+        profile = selectors.ProfileSelector.get_profile_by_id(request.data['profileId'])
+        team.members.add(profile)
+        team_update = db_updater.TeamUpdater.update_details_team(team)
+        team_serializer: TeamSerializer = TeamSerializer(team_update)
+        return Response(data={'team': team_serializer.data}, status=status.HTTP_200_OK)
+
+
+
 
 
 class AllTeamsView(APIView):
@@ -339,7 +352,7 @@ class ImportData(APIView):
             is_for_tennis = False
             payment = False
             if not 'לא תקני' in row[3] and not 'ביה"ס' in row[4] and not 'בית ספר' in row[4] and not 'בי"ס' in row[4] and not 'לא' in row[21] and not 'בריכ' in row[3] and not 'כושר' in row[3] and not 'לא תקני' in row[3] and not 'ליג' in row[23] and not 'מסלול' in row[3] and not 'אקסטרים' in row[3] and not 'חול' in row[3] and not 'שייט' in row[3] and not 'מוטורי' in row[3]:
-                if 'כדורגל' in row[3] or 'מיני' in row[3] or 'שחבק' in row[3] or 'משולב' in row[3]:
+                if 'כדורגל' in row[3] or 'מיני' in row[3] or 'שחבק' in row[3] or 'משולב' in row[3] or 'קט רגל' in row[3]:
                     is_for_football = True
                 if 'כדורסל' in row[3] or 'משולב' in row[3]:
                     is_for_basketball = True
