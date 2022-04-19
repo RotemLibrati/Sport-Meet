@@ -232,6 +232,7 @@ class TeamView(APIView):
         team = selectors.TeamSelector.get_obj_by_id(id)
         profile = selectors.ProfileSelector.get_profile_by_id(request.data['profileId'])
         team.members.add(profile)
+        selectors.NotificationSelector.send_notification_when_profile_added_to_team(profile, team)
         team_update = db_updater.TeamUpdater.update_details_team(team)
         team_serializer: TeamSerializer = TeamSerializer(team_update)
         return Response(data={'team': team_serializer.data}, status=status.HTTP_200_OK)

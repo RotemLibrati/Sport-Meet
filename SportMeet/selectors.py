@@ -191,6 +191,10 @@ class NotificationSelector:
         db_updater.NotificationUpdater.create_new_notification(
             profile=profile, message="יש לך משחק ב{} {} במיקום: {}".format(game.event_time.date(), game.event_time.time() , game.location.name))
     
+    @staticmethod
+    def send_notification_when_profile_added_to_team(profile: Profile, team: Team):
+        db_updater.NotificationUpdater.create_new_notification(profile=profile, message="{} הוסיף אותך לקבוצת {}".format(team.admin, team.name))
+
     def get_notification_by_profile(profile: Profile):
         _now = datetime.now()
         delta_96_hours = timedelta(hours=-96)
