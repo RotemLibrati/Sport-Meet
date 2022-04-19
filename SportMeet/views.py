@@ -178,6 +178,8 @@ class CreateNewGameView(APIView):
                 request.data['date'], '%a %b %d %H:%M:%S %Y').strftime('%d-%m-%Y %H:%M')
             event_time = datetime.strptime(date, '%d-%m-%Y %H:%M')
         limit_participants = request.data['limitParticipants']
+        if not selectors.GameSelector.check_if_exist_game(event_time, location):
+            return Response(data={"error": "existing game in same location and event time"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         game = db_updater.GameUpdater.create_new_game(
             team=team, location=location, event_time=event_time, limit_participants=limit_participants)
         if request.data["team"]:

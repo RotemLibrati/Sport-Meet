@@ -1,6 +1,8 @@
-from datetime import time
+from datetime import time, tzinfo
 from os import stat
 import profile
+
+from django.forms import DateTimeField
 from SportMeet.models import AppMessage, Attendance, GameField, Notification, Profile, Team, Game
 from django.contrib.auth.models import User
 from SportMeet import db_updater
@@ -83,6 +85,16 @@ class GameSelector:
         tomorrow = _now + delta_24_hours
         games = Game.objects.filter(team__in=team, event_time__gte=_now, event_time__lte=tomorrow).order_by('event_time')
         return games
+
+    @staticmethod
+    def check_if_exist_game(event_time: datetime, location: GameField):
+        games = Game.objects.filter(location=location)
+        for game in games:
+            if game.event_time.date() == event_time.date():
+                if game.event_time.time().hour+3 - event_time.time().hour <= 2 and game.event_time.time().hour+3 - event_time.time().hour > -2:
+                    return False
+        return True
+                
 
     # @staticmethod
     # def get_upcoming_games_24_hours(profile: Profile):
