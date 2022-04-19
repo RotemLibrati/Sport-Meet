@@ -1,4 +1,5 @@
 from datetime import time, tzinfo
+from operator import le
 from os import stat
 import profile
 
@@ -63,6 +64,11 @@ class GameSelector:
         games = Game.objects.filter(
             team__in=teams, event_time__gte=_now).order_by('event_time')
         return games
+
+    @staticmethod
+    def count_of_games_in_the_feuture(profile: Profile):
+        games = Attendance.objects.filter(profile=profile, status="מגיע")
+        return len(games)
 
     @staticmethod
     def all_upcoming_games(username: str):

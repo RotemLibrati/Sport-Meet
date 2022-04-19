@@ -57,7 +57,9 @@ class ProfileDataView(APIView):
         profile = selectors.ProfileSelector.get_details_profile(username)
         count = selectors.TeamSelector.get_count_of_unanonymous_team_for_profile(
             profile)
-        return Response(data={'teams': count}, status=status.HTTP_200_OK)
+        count_attendance_game = selectors.GameSelector.count_of_games_in_the_feuture(
+            profile)
+        return Response(data={'teams': count, 'games': count_attendance_game}, status=status.HTTP_200_OK)
 
 
 class ListUsersView(APIView):
@@ -222,25 +224,24 @@ class TeamsView(APIView):
         return Response(data={'teams': team_serializer.data}, status=status.HTTP_200_OK)
 
 
-        
 class TeamView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request, id, *args, **kwargs):
         team = selectors.TeamSelector.get_obj_by_id(id)
         team_serializer: TeamSerializer = TeamSerializer(team)
         return Response(data={'team': team_serializer.data}, status=status.HTTP_200_OK)
-    
+
     def put(self, request, id, *args, **kwargs):
         team = selectors.TeamSelector.get_obj_by_id(id)
-        profile = selectors.ProfileSelector.get_profile_by_id(request.data['profileId'])
+        profile = selectors.ProfileSelector.get_profile_by_id(
+            request.data['profileId'])
         team.members.add(profile)
-        selectors.NotificationSelector.send_notification_when_profile_added_to_team(profile, team)
+        selectors.NotificationSelector.send_notification_when_profile_added_to_team(
+            profile, team)
         team_update = db_updater.TeamUpdater.update_details_team(team)
         team_serializer: TeamSerializer = TeamSerializer(team_update)
         return Response(data={'team': team_serializer.data}, status=status.HTTP_200_OK)
-
-
-
 
 
 class AllTeamsView(APIView):
@@ -376,6 +377,7 @@ class importCityView(APIView):
         game_filed_list = selectors.DataSelector.get_all_game_field_by_city_name(
             city)
         return Response(data=GameFieldSerializer(game_filed_list, many=True).data, status=status.HTTP_200_OK)
+
 
 class importGameFiledByCityView(APIView):
     def get(self, request, city, typeSport, *args, **kwargs):
