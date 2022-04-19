@@ -1,4 +1,6 @@
 from datetime import time
+from os import stat
+import profile
 from SportMeet.models import AppMessage, Attendance, GameField, Notification, Profile, Team, Game
 from django.contrib.auth.models import User
 from SportMeet import db_updater
@@ -24,6 +26,11 @@ class ProfileSelector:
     def get_details_profile(username):
         user = User.objects.get(username=username)
         profile = Profile.objects.get(user=user)
+        return profile
+
+    @staticmethod
+    def get_profile_by_id(id):
+        profile = Profile.objects.get(id=id)
         return profile
 
     
