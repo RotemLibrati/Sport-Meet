@@ -1,5 +1,5 @@
 from django.contrib import admin
-from SportMeet.models import Profile, Team, Game, GameField, AppMessage, Attendance, Notification
+from SportMeet.models import Profile, Team, Game, GameField, AppMessage, Attendance, Notification, City
 
 
 class TeamAdmin(admin.ModelAdmin):
@@ -16,4 +16,5 @@ admin.site.register(GameField, GameFieldAdmin)
 admin.site.register(AppMessage)
 admin.site.register(Attendance)
 admin.site.register(Notification)
+admin.site.register(City)
 

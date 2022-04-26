@@ -4,7 +4,7 @@ from os import stat
 import profile
 
 from django.forms import DateTimeField
-from SportMeet.models import AppMessage, Attendance, GameField, Notification, Profile, Team, Game
+from SportMeet.models import AppMessage, Attendance, GameField, Notification, Profile, Team, Game, City
 from django.contrib.auth.models import User
 from SportMeet import db_updater
 from datetime import datetime, timedelta
@@ -244,3 +244,36 @@ class DataSelector:
         elif typeSport == 'טניס':
             city = GameField.objects.filter(region=city_name, is_for_tennis=True)
         return city
+
+class CitySelector:
+    @staticmethod
+    def add_cities():
+        db_updater.ImportCitiesUpdater.add_cities_to_db("ירושלים", "Jerusalem")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("באר שבע", "Be'er Sheva")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("מצפה רמון", "Mizpe Ramon")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("תל אביב-יפו", "Tel Aviv-Yafo")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("אופקים", "Ofakim")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("חיפה", "Haifa")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("רמת גן", "Ramat Gan")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("ראשון לציון", "Rishon Letsiyon")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("אשדוד", "Ashdod")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("נתניה", "Natanya")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("הרצליה", "Herzliya")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("כפר סבא", "Kfar Saba")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("חדרה", "Hadera")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("בת ים", "Bat Yam")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("גבעתיים", "Givat Haim")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("קרית גת", "Qiryat Gat")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("נהריה", "Nahariya")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("יבנה", "Yavne")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("אילת", "Eilat")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("רמת השרון", "Ramat Hasharon")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("טבריה", "Tiberias")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("נתיבות", "Netivot")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("דימונה", "Dimona")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("שדרות", "Sderot")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("קרית שמונה", "Qiryat Shmona")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("ירוחם", "Yeruham")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("קרית מוצקין", "Qiryat Motzkin")
+        db_updater.ImportCitiesUpdater.add_cities_to_db("בית שמש", "Beit-Shemesh")
+        return "done"

@@ -88,3 +88,7 @@ class Attendance(models.Model):
         ('מגיע', 'מגיע'), ('לא מגיע', 'לא מגיע'), ('אולי מגיע', 'אולי מגיע')])
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+
+class City(models.Model):
+    hebrew_name = models.CharField(max_length=20)
+    english_name = models.CharField(max_length=20)

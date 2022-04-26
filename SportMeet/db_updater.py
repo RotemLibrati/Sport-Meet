@@ -2,7 +2,7 @@ from datetime import datetime
 from numbers import Integral
 from re import sub
 from telnetlib import GA
-from SportMeet.models import AppMessage, Attendance, GameField, Notification, Profile, Team, Game
+from SportMeet.models import AppMessage, Attendance, City, GameField, Notification, Profile, Team, Game
 from SportMeet import selectors
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -145,6 +145,15 @@ class NotificationUpdater:
     def update_is_seen_field_to_true(notification: Notification):
         notification.save()
         return notification
+
+class ImportCitiesUpdater:
+    @staticmethod
+    def add_cities_to_db(hebrew: str, english: str):
+        city: City = City(hebrew_name=hebrew, english_name=english)
+        city.save()
+        return city
+
+
 
 
 

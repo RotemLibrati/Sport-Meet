@@ -469,3 +469,10 @@ class NotificationAmountView(APIView):
         notification = selectors.NotificationSelector.get_notifications_by_profile_and_is_seen(
             profile)
         return Response(data={"Amount of unseen notifications": len(notification)}, status=status.HTTP_200_OK)
+
+class ImportCitiesView(APIView):
+    def get(self, request, *args, **kwargs):
+        cities = selectors.CitySelector.add_cities()
+        if cities == "done":
+            return Response(data={"message": "done"}, status=status.HTTP_201_CREATED)
+        return Response(data={"message": "Error"}, status=status.HTTP_501_NOT_IMPLEMENTED)
