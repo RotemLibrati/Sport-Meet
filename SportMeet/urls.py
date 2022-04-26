@@ -37,5 +37,6 @@ urlpatterns = [
     re_path('^team-messages/(?P<id>.+)/$', views.AppMessageView.as_view()),
     re_path('^message/(?P<id>.+)/$', views.AppMessageView.as_view()),
     re_path('^new-message/(?P<teamID>.+)/$', views.AppMessageView.as_view()),
+    re_path('^convert-city/(?P<city>.+)/$', views.ConvertCityView.as_view()),
     
 ]

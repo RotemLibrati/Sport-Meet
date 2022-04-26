@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from SportMeet.models import AppMessage, Attendance, Game, GameField, Profile, Team
-from SportMeet.serializers import AppMessageSerializer, AttendanceSerializer, GameSerializer, NotificationSerializer, ProfileSerializer, TeamSerializer, UserSerializer, GameFieldSerializer
+from SportMeet.serializers import AppMessageSerializer, AttendanceSerializer, GameSerializer, NotificationSerializer, ProfileSerializer, TeamSerializer, UserSerializer, GameFieldSerializer, CitySerializer
 from SportMeet import db_updater, selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import csv
@@ -476,3 +476,11 @@ class ImportCitiesView(APIView):
         if cities == "done":
             return Response(data={"message": "done"}, status=status.HTTP_201_CREATED)
         return Response(data={"message": "Error"}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
+class ConvertCityView(APIView):
+    def get(self, request, city, *args, **kwargs):
+        city = selectors.CitySelector.find_city_by_name(city)
+        if city:
+            return Response(data={"city": CitySerializer(city).data}, status=status.HTTP_200_OK)
+        else: 
+            return Response(data={"message": "City does not exist"})

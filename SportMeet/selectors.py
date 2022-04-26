@@ -277,3 +277,11 @@ class CitySelector:
         db_updater.ImportCitiesUpdater.add_cities_to_db("קרית מוצקין", "Qiryat Motzkin")
         db_updater.ImportCitiesUpdater.add_cities_to_db("בית שמש", "Beit-Shemesh")
         return "done"
+
+    def find_city_by_name(city: str):
+        try: 
+            converted_city = City.objects.get(hebrew_name=city)
+            return converted_city
+        except City.DoesNotExist as e:
+            return False
+        

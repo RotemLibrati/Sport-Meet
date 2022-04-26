@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import fields
 from rest_framework import serializers
-from SportMeet.models import Attendance, Game, Profile, Team, GameField, AppMessage, Notification
+from SportMeet.models import Attendance, Game, Profile, Team, GameField, AppMessage, Notification, City
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -64,4 +64,9 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
+        exclude = []
+
+class CitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
         exclude = []
