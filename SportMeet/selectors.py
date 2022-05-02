@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from SportMeet import db_updater
 from datetime import datetime, timedelta
 from django.utils import timezone
+import os
 
 
 class ProfileSelector:
@@ -238,8 +239,8 @@ class EmailSelector:
     @staticmethod
     def send_message(reciver, subject, body):
         return requests.post(
-            "https://api.mailgun.net/v3/sandbox86fa3c050b2641fdb0fdb3e2c61ac21c.mailgun.org/messages",
-            auth=("api", "a556a52ff91a162b0e4216c853d161d2-fe066263-3c75e112"),
+            f"https://api.mailgun.net/v3/{os.getenv('DOMAIN_NAME_EMAIL')}/messages",
+            auth=("api", os.getenv('API_KEY_FOR_EMAIL')),
             data={"from": "sportmeetsce@gmail.com",
                   "to": [reciver],
                   "subject": subject,
