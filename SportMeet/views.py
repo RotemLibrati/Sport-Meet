@@ -484,3 +484,11 @@ class ConvertCityView(APIView):
             return Response(data={"city": CitySerializer(city).data}, status=status.HTTP_200_OK)
         else: 
             return Response(data={"message": "City does not exist"})
+
+class SendEmailView(APIView):
+    def post(self, request, *args, **kwargs):
+        reciver = request.data['reciver']
+        subject = request.data['subject']
+        body = request.data['body']
+        selectors.EmailSelector.send_message(reciver, subject, body) 
+        return Response(data={"message": "Sended"})
