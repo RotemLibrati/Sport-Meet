@@ -10,6 +10,12 @@ from SportMeet import db_updater
 from datetime import datetime, timedelta
 from django.utils import timezone
 import os
+# import smtplib
+# from email.mime.text import MIMEText
+# from email.mime.multipart import MIMEMultipart
+# from rest_framework.response import Response
+# from rest_framework import status
+from django.core.mail import EmailMessage
 
 
 class ProfileSelector:
@@ -238,13 +244,14 @@ class NotificationSelector:
 class EmailSelector:
     @staticmethod
     def send_message(reciver, subject, body):
-        return requests.post(
-            f"https://api.mailgun.net/v3/{os.getenv('DOMAIN_NAME_EMAIL')}/messages",
-            auth=("api", os.getenv('API_KEY_FOR_EMAIL')),
-            data={"from": "sportmeetsce@gmail.com",
-                  "to": [reciver],
-                  "subject": subject,
-                  "text": body})
+        print(type(reciver))
+        email = EmailMessage(
+            subject,
+            body,
+            'sportmeetsce@gmail.com',
+            [reciver]
+        )
+        email.send()
 
 
 class DataSelector:
