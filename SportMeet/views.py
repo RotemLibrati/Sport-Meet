@@ -1,3 +1,4 @@
+from base64 import decode
 from copy import error
 from re import A, sub
 import uuid
@@ -14,7 +15,7 @@ from SportMeet import db_updater, selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import csv
 from django.contrib.auth import authenticate, login, logout
-
+from django.contrib.auth.hashers import make_password, check_password
 
 class ListProfilesView(APIView):
     permission_classes = [IsAuthenticated]
@@ -61,6 +62,24 @@ class ProfileDataView(APIView):
             profile)
         return Response(data={'teams': count, 'games': count_attendance_game}, status=status.HTTP_200_OK)
 
+
+class ProfileView(APIView):
+    def get(self, request, email, *args, **kwargs):
+        try:
+            profile = selectors.ProfileSelector.one_obj_by_email(email)
+            profile_serializer = ProfileSerializer(profile).data
+            return Response(data={"profile": profile_serializer}, status=status.HTTP_200_OK)
+        except:
+            return Response(data={"error": "Profile does not exist" }, status=status.HTTP_502_BAD_GATEWAY)
+
+class UserPasswordView(APIView):
+    def put(self, request, email, *args, **kwargs):
+        profile = selectors.ProfileSelector.one_obj_by_email(email)
+        user = selectors.UserSelector.get_user_by_profile(profile)
+        password = request.data['password']
+        user.set_password(password)
+        user.save()
+        return Response(data={"user": UserSerializer(user).data}, status=status.HTTP_205_RESET_CONTENT)
 
 class ListUsersView(APIView):
     permission_classes = [AllowAny]

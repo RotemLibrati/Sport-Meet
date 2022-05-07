@@ -18,6 +18,8 @@ urlpatterns = [
     path('import-city', views.ImportCitiesView.as_view()),
     path('send-email', views.SendEmailView.as_view()),
     re_path('^city/(?P<city>.+)/$', views.importCityView.as_view()),
+    re_path('^profile/(?P<email>.+)/$', views.ProfileView.as_view()),
+    re_path('^change-password/(?P<email>.+)/$', views.UserPasswordView.as_view()),
     re_path('^type/(?P<city>.+)/(?P<typeSport>.+)/$', views.importGameFiledByCityView.as_view()),
     re_path('^delete-team/(?P<id>.+)/$', views.DeleteOrEditTeamView.as_view()),
     re_path('^recent-games/(?P<username>.+)/$', views.RecentGamesView.as_view()),

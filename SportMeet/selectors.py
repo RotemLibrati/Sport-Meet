@@ -10,11 +10,6 @@ from SportMeet import db_updater
 from datetime import datetime, timedelta
 from django.utils import timezone
 import os
-# import smtplib
-# from email.mime.text import MIMEText
-# from email.mime.multipart import MIMEMultipart
-# from rest_framework.response import Response
-# from rest_framework import status
 from django.core.mail import EmailMessage
 
 
@@ -29,7 +24,7 @@ class ProfileSelector:
         try:
             profile = Profile.objects.get(email=email)
         except Profile.DoesNotExist as e:
-            raise e
+            return e
         return profile
 
     @staticmethod
@@ -48,6 +43,9 @@ class UserSelector:
     @staticmethod
     def all_users():
         return User.objects.all()
+    
+    def get_user_by_profile(profile: Profile):
+        return User.objects.get(profile=profile)
 
 
 class GameSelector:
