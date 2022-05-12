@@ -80,7 +80,7 @@ class GameFieldUpdater:
 
 class TeamUpdater:
     @staticmethod
-    def create_new_team(admin=None, members=[], name=None, sport=None, anonymous=False, type='פומבית'):
+    def create_new_team(admin=None, members=[], name=None, sport=None, anonymous=False, type='קבוצה פומבית'):
         team: Team = Team(admin=admin, name=name,
                           sport=sport, anonymous=anonymous, type=type)
         team.save()

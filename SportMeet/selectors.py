@@ -59,7 +59,7 @@ class GameSelector:
             team__in=teams, event_time__gte=_now).order_by('event_time')[0:3]
         return games
 
-    @staticmethod
+    @staticmethod 
     def many_obj_in_the_future_by_username(username: str):
         user = User.objects.get(username=username)
         teams = user.profile.team.all()
@@ -88,7 +88,7 @@ class GameSelector:
 
     @staticmethod
     def get_games_of_team():
-        team = Team.objects.filter(type="פומבית")
+        team = Team.objects.filter(type="קבוצה פומבית")
         _now = datetime.now()
         delta_24_hours = timedelta(hours=24)
         tomorrow = _now + delta_24_hours
@@ -133,7 +133,7 @@ class TeamSelector:
 
     @staticmethod
     def get_public_team():
-        team = Team.objects.filter(type="פומבית")
+        team = Team.objects.filter(type="קבוצה פומבית")
         return team
 
     @staticmethod
@@ -223,7 +223,7 @@ class NotificationSelector:
     @staticmethod
     def send_notification_when_profile_added_to_team(profile: Profile, team: Team):
         db_updater.NotificationUpdater.create_new_notification(
-            profile=profile, message="{} הוסיף אותך לקבוצת {}".format(team.admin, team.name))
+            profile=profile, message="{} הוסיף אותך לקבוצת {}".format(team.admin.user.username, team.name))
 
     def get_notification_by_profile(profile: Profile):
         _now = datetime.now()

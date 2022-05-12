@@ -15,7 +15,7 @@ from SportMeet import db_updater, selectors
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import csv
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.hashers import make_password, check_password
+
 
 class ListProfilesView(APIView):
     permission_classes = [IsAuthenticated]
@@ -176,7 +176,7 @@ class DeleteOrEditTeamView(APIView):
 
 
 class CreateNewGameView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         try:
